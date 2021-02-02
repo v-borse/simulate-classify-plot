@@ -50,17 +50,13 @@ zz = [ 7,  7,  9,  6, 13,  4, 27, 19,  1,  6, 17,  7, 25, 22, 26, 14,  4,
 
 
 
-# Soulivanh: the argument t of the fonction is never used so remove it.
-# the function uses a varible dt that is not declared as an argument.
-# If possible, we should not use global variables in functions!
-# Also, it would be preferable that this function only returns x_dot and not dt * x_dot.
-# VB: dt*x_dot is used to facilitate in coding the RK4 method as compared to x_dot
+
 def lorenz(x, y, z,dt, s=10, r=28, b=8/3):
     '''
     Given:
        x, y, z: a point of interest in three dimensional space
        s, r, b: parameters defining the lorenz attractor
-       
+       t: step size
     Returns:
        dt*x_dot, dt*y_dot, dt*z_dot: values of the lorenz attractor's partial
            derivatives at the point x, y, z
@@ -71,11 +67,9 @@ def lorenz(x, y, z,dt, s=10, r=28, b=8/3):
     
     return dt*x_dot, dt*y_dot, dt*z_dot
 
-# Soulivanh: this fonction should have as argument: dt, num_steps, the number of trajectories and the initializations
-# If possible, we should not use global variables in functions!
+
 def trajectory(dt,num_steps,ntraj):
-    # Soulivanh: if you know the final length of the vector, you should preallocate it. here:
-		# VB: the values allocated in these arrrays are unrealistic having powers as ^-316
+    
 #    x = np.empty((num_steps + 1) * ntraj)
 #    y = np.empty((num_steps + 1) * ntraj)
 #    z = np.empty((num_steps + 1) * ntraj)
@@ -107,7 +101,7 @@ def trajectory(dt,num_steps,ntraj):
             """
             # RK 4 SCHEME
             
-            # Soulivanh: again you shoul removed the unnecessary argument t is your lorenz function because in the in the Lorenz 63, the derivative does not depend on the time. It creates a confusion between the integration time and the time itself.
+            
             
             k1_x, k1_y, k1_z = lorenz(xs[i], ys[i], zs[i], dt)
             k2_x, k2_y, k2_z = lorenz(xs[i]+0.5*k1_x, ys[i]+0.5*k1_y, zs[i]+0.5*k1_z, dt)
@@ -136,6 +130,3 @@ with open('pts.npy', 'wb') as h:
     np.save(h, pts)
 
 
-# creating a vector
-# Soulivanh: it would better if the trajectory function returs directly hthis object and the this object is saved with np.save outside of the function.
-#pts=np.transpose(np.array([arr_x,arr_y,arr_z]))
