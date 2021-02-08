@@ -56,7 +56,7 @@ def lorenz(x, y, z,dt, s=10, r=28, b=8/3):
     Given:
        x, y, z: a point of interest in three dimensional space
        s, r, b: parameters defining the lorenz attractor
-       t: step size
+       
     Returns:
        dt*x_dot, dt*y_dot, dt*z_dot: values of the lorenz attractor's partial
            derivatives at the point x, y, z
@@ -111,12 +111,12 @@ def trajectory(dt,num_steps,ntraj):
             ys[i + 1] = ys[i] + ((k1_y+2*k2_y+2*k3_y+k4_y) /6.0)
             zs[i + 1] = zs[i] + ((k1_z+2*k2_z+2*k3_z+k4_z) /6.0)
     
-    # Saving values for each trajectory        
-    x=np.append(x,xs,axis=0)
-    y=np.append(y,ys,axis=0)
-    z=np.append(z,zs,axis=0)
+         # Saving values for each trajectory        
+         x=np.append(x,xs,axis=0)
+         y=np.append(y,ys,axis=0)
+         z=np.append(z,zs,axis=0)
     
-    pt=np.transpose(np.array([x,y,z]))
+         pt=np.transpose(np.array([x,y,z]))
     
     return pt
     
