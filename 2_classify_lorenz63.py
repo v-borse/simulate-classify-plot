@@ -67,11 +67,21 @@ def classify2(_pt,q):
     
     return _ts
 
+
+def fixed_points(r,b):
+    qx=math.sqrt(b*(r-1))
+    qy=math.sqrt(b*(b-1))
+    qz=r-1
+    q=np.array([qx,qy,qz])
+    
+    return q 
+
 #-----------------------------------------------------------------------------------------------------------------
 
 
 pts=np.load('pts.npy')
-q=np.array([15.0,13.0,37.0])
+#q=np.array([15.0,13.0,37.0])
+q=fixed_points(r=28,b=8/3)
 
 with open('q.npy', 'wb') as f:
         np.save(f, q)   
