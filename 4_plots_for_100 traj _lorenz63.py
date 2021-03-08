@@ -22,10 +22,7 @@ sns.set() # Setting seaborn as default style even if use only matplotlib
 
 
 def trajectory(r,dt,num_steps,ntraj):
-    # Soulivanh: if you know the final length of the vector, you should preallocate it. here:
-#    x = np.empty((num_steps + 1) * ntraj)
-#    y = np.empty((num_steps + 1) * ntraj)
-#    z = np.empty((num_steps + 1) * ntraj)
+   
     x=np.array([])
     y=np.array([])
     z=np.array([])
@@ -67,9 +64,6 @@ def trajectory(r,dt,num_steps,ntraj):
         print(len(x))
         y=np.append(y,ys,axis=0)
         z=np.append(z,zs,axis=0)
-    #x=np.append(x,xs,axis=0)
-    #y=np.append(y,ys,axis=0)
-    #z=np.append(z,zs,axis=0)
     
     pt=np.transpose(np.array([x,y,z]))
     
