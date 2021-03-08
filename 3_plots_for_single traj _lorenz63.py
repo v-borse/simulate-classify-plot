@@ -23,13 +23,7 @@ sns.set() # Setting seaborn as default style even if use only matplotlib
 
 
 def single_traj(r,dt,num_steps):
-    # Soulivanh: if you know the final length of the vector, you should preallocate it. here:
-#    x = np.empty((num_steps + 1) * ntraj)
-#    y = np.empty((num_steps + 1) * ntraj)
-#    z = np.empty((num_steps + 1) * ntraj)
-    #x=np.array([])
-    #y=np.array([])
-    #z=np.array([])
+   
     pt=[]
     #for single trajectory
     xs = np.empty(num_steps + 1)
