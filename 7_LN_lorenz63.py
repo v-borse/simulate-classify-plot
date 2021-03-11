@@ -22,7 +22,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
-from module mport lorenz
+from module import lorenz
 from module import single_traj
 from module import ideal
 from module import non_recursive_LN
