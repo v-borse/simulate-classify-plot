@@ -59,8 +59,8 @@ index=0
 #------------UNIVARIATE LINEAR REGRESSION ---------------------------------
 
 
-X1, Y1= ideal(pts)
-X2, Y2= ideal(pts2)
+X1, Y1= ideal(pts,t_steps)
+X2, Y2= ideal(pts2,t_steps)
 i1,c1,y_pred1=non_recursive_LN (X2[index], t_steps,index,pts2)
 i2,c2,y_pred2=recursive_LN (X2[index], t_steps,index,pts2)
 
@@ -93,8 +93,8 @@ axs[1,1].set_ylabel("Y")
 #---------------MULTIVARIATE LINEAR REGRESSION----------------------------------------
 
 
-X1, Y1= ideal(pts)
-X2, Y2= ideal(pts2)
+X1, Y1= ideal(pts,t_steps)
+X2, Y2= ideal(pts2,t_steps)
 i1,c1,y_pred1=m_non_recursive_LN (X2, t_steps,index,pts2)
 i2,c2,y_pred2=m_recursive_LN (X2, t_steps,index,pts2)
 
