@@ -237,12 +237,8 @@ def ideal (pt, t_steps):
     
     print(pt)
     X=np.transpose(pt)
-    for i,item in enumerate(X):
-        for j,jitem in enumerate(X[i]):
-            if ((j+t_steps)<=(len(X[i])-1)):
-                Y[i][j]=X[i][j+t_steps]
-            else:
-                Y[i][j]=0
+    Y=X[:][t_steps:-(t_steps+1)]
+    
     return X, Y
 
 def non_recursive_LN (Xt,t_steps,ind,pt):
