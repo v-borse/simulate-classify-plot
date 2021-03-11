@@ -20,85 +20,11 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 sns.set() # Setting seaborn as default style even if use only matplotlib
 
+from module import trajectory
+from module import committor3
 
-def trajectory(r,dt,num_steps,ntraj):
-   
-    x=np.array([])
-    y=np.array([])
-    z=np.array([])
-    pt=[]
-    #for n trajectories
-    for j in range(ntraj):
-        xs = np.empty(num_steps + 1)
-        ys = np.empty(num_steps + 1)
-        zs = np.empty(num_steps + 1)
-        
-        # Set initial values
-        xs[0], ys[0], zs[0]= (xx[j], yy[j], zz[j])
-        #xs[0], ys[0], zs[0] = (1., -1., 2.05)
-        
-        
-        for i in range(num_steps):
-           
-            
-            """
-            EULER SCHEME
-            
-            dt*x_dot, dt*y_dot, dt*z_dot = lorenz(xs[i], ys[i], zs[i])
-            xs[i + 1] = xs[i] + dt*x_dot
-            ys[i + 1] = ys[i] + dt*y_dot
-            zs[i + 1] = zs[i] + dt*z_dot
-            """
-            # RK 4 SCHEME
-            
-            k1_x, k1_y, k1_z = lorenz(xs[i], ys[i], zs[i], dt,r)
-            k2_x, k2_y, k2_z = lorenz(xs[i]+0.5*k1_x, ys[i]+0.5*k1_y, zs[i]+0.5*k1_z, dt,r)
-            k3_x, k3_y, k3_z = lorenz(xs[i]+0.5*k2_x, ys[i]+0.5*k2_y, zs[i]+0.5*k2_z, dt,r)
-            k4_x, k4_y, k4_z = lorenz(xs[i]+k3_x, ys[i]+k3_y, zs[i]+k3_z, dt,r)
-            xs[i + 1] = xs[i] + ((k1_x+2*k2_x+2*k3_x+k4_x) /6.0)
-            ys[i + 1] = ys[i] + ((k1_y+2*k2_y+2*k3_y+k4_y) /6.0)
-            zs[i + 1] = zs[i] + ((k1_z+2*k2_z+2*k3_z+k4_z) /6.0)
-    
-        # Saving values for each trajectory        
-        x=np.append(x,xs,axis=0)
-        print(len(x))
-        y=np.append(y,ys,axis=0)
-        z=np.append(z,zs,axis=0)
-    
-    pt=np.transpose(np.array([x,y,z]))
-    
-    return pt
-    
 
-def committor3(delta,ts,st1,st2):
-    """
-    Given:
-        delta = # of time steps within which there is a switching
-        ts = time series
-        Example: if we have to switch from 0 to 1 then
-        st1=0
-        st2=1
-    Returns:
-        
-        indirect = counts for indirect switching from st1 to st2
-    """
-        
-    indirect=0
-    
-    II=np.where(np.isin(ts,st1))[0]
-    lenII=len(II)  
-    
-    for i,item in enumerate(II):
-        if(item < (len(ts) - 1)):
-            iend = min(item+delta+1, len(ts))
-          
-            trial=ts[item+1:iend]
-            #print(trial)
-         
-            indirect +=  np.any(np.isin(trial,st2))
-    #p=indirect/len(II)
-    #print(p)   
-    return(indirect,lenII)
+
 
 
 #----MAIN BODY of the code --------------------------------------------------------------------------------------------------
