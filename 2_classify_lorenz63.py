@@ -17,64 +17,11 @@ from matplotlib.colors import cnames
 from matplotlib import animation
 import random
 
+from module import classify2
+from module import fixed_points
 
 
 
-
-def classify2(_pt,q):
-    """
-    Given:
-    _pt: takes vector (set of coordinates lying on trajectories) 
-    q: the center of spherical region
-    Returns:
-    _ts: time series
-    
-    
-    dst: distance between two points
-    R: radius of the sphere
-    """
-    _c1=0
-    _c2=0
-    _c0=0
-    _r0=[]
-    _r1=[]
-    _r2=[]
-   
-    _ts=[]
-    R=1
-    for each_ind, each_line in enumerate(_pt):
-        #calculates Eucledian distance between two points
-        dst=np.linalg.norm(each_line-q)
-        
-        if (dst<=R and each_line[0]>0):
-            #Soulivanh: _ts[each_ind] = 1
-            _ts.append(1)
-            _r1.append(each_ind)
-            _c1+=1
-            # region 1: set of points within the spherical bowl of radius R centered around q
-            # dst <=R and x>0
-        elif (dst>R and each_line[0]>0):
-            _ts.append(2)
-            _r2.append(each_ind)
-            _c2+=1
-            # region 2: set of points outside the spherical bowl and x>0
-            #  dst>R and x>0
-        elif(each_line[0]<=0):
-            _ts.append(0)
-            _r0.append(each_ind)
-            _c0+=1
-            # region 0: dst>R and x<=0
-    
-    return _ts
-
-
-def fixed_points(r,b):
-    qx=math.sqrt(b*(r-1))
-    qy=math.sqrt(b*(b-1))
-    qz=r-1
-    q=np.array([qx,qy,qz])
-    
-    return q 
 
 #-----------------------------------------------------------------------------------------------------------------
 
