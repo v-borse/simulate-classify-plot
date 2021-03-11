@@ -232,40 +232,6 @@ def committor2(delta,ts,st1,st2):
         st1=0
         st2=1
     Returns:
-        direct = counts for direct switching from st1 to st2
-        indirect = counts for indirect switching from st1 to st2
-    """
-        
-    indirect=0
-    direct=0
-    II=np.where(np.isin(ts,st1))[0]
-        # II= list of indices in ts[i]==st1
-    #print(II)
-    #print(len(II))
-    for i,item in enumerate(II):
-        if(item < (len(ts) - 1)):
-            iend = min(item+delta+1, len(ts))
-            #print(item+1)
-            #print(iend)
-            trial=ts[item+1:iend]
-            #print(trial)
-            #print((np.isin(trial,st2)))
-            indirect +=  np.any(np.isin(trial,st2))
-    p=indirect/len(II)
-    #print(p)   
-    return(p)
-    
-    
-
-def committor3(delta,ts,st1,st2):
-    """
-    Given:
-        delta = # of time steps within which there is a switching
-        ts = time series
-        Example: if we have to switch from 0 to 1 then
-        st1=0
-        st2=1
-    Returns:
         
         indirect = counts for indirect switching from st1 to st2
     """
@@ -274,7 +240,6 @@ def committor3(delta,ts,st1,st2):
     
     II=np.where(np.isin(ts,st1))[0]
     lenII=len(II)  
-    
     for i,item in enumerate(II):
         if(item < (len(ts) - 1)):
             iend = min(item+delta+1, len(ts))
@@ -283,11 +248,9 @@ def committor3(delta,ts,st1,st2):
             #print(trial)
          
             indirect +=  np.any(np.isin(trial,st2))
-    #p=indirect/len(II)
+    p=indirect/len(II)
     #print(p)   
-    return(indirect,lenII)
-    
-
+    return(indirect,lenII,p)
 
 
 def ideal (pt, t_steps):
