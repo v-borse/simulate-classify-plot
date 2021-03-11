@@ -43,15 +43,12 @@ X1=np.transpose(pts)
 pts2=single_traj(1,-1,2.05,r,0.01,10000)
 X2=np.transpose(pts2)
 
-covMatrix = np.corrcoef(X,bias=True)
-y=np.dot(covMatrix,X)
-Y=np.dot(covMatrix,X)
-Y1=np.dot(covMatrix,X)
-Y2=np.dot(covMatrix,X)
-
+Y1=[]
+Y2=[]
 y_pred=[]
 y_pred1=[]
 y_pred2=[]
+
 t_steps=50
 index=0
 # index can take any value (0,1,2) corresponding to X(x,y,z)
