@@ -87,12 +87,12 @@ for k,kitem in enumerate(delt):
     LenII_01=0
     for i in range(99):
       
-      indir_01,lenII_01=committor3(deltak,TS[i*10001:ii*10001],0,1)
+      indir_01,lenII_01,p01=committor2(deltak,TS[i*10001:ii*10001],0,1)
       Indir_01+=indir_01
       LenII_01+=lenII_01
       if (indir_01==0):
         per_01+=1
-      p01=indir_01/lenII_01
+      #p01=indir_01/lenII_01
       P01.append(p01)
       
       ii+=1
