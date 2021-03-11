@@ -18,42 +18,8 @@ from matplotlib.colors import cnames
 from matplotlib import animation
 import random
 
-
+from module import committor2
     
-def committor2(delta,ts,st1,st2):
-    """
-    Given:
-        delta = # of time steps within which there is a switching
-        ts = time series
-        Example: if we have to switch from 0 to 1 then
-        st1=0
-        st2=1
-    Returns:
-        direct = counts for direct switching from st1 to st2
-        indirect = counts for indirect switching from st1 to st2
-    """
-        
-    indirect=0
-    direct=0
-    II=np.where(np.isin(ts,st1))[0]
-        # II= list of indices in ts[i]==st1
-    #print(II)
-    #print(len(II))
-    for i,item in enumerate(II):
-        if(item < (len(ts) - 1)):
-            iend = min(item+delta+1, len(ts))
-            #print(item+1)
-            #print(iend)
-            trial=ts[item+1:iend]
-            #print(trial)
-            #print((np.isin(trial,st2)))
-            indirect +=  np.any(np.isin(trial,st2))
-    p=indirect/len(II)
-    #print(p)   
-    return(p)
-
-
-
 
     
 #ts=[0,0,2,2,2,2,1,1,1,2,2,0,0,1,0,0,2,1,1,0,0,2,2,2,2,1,1,1,2,2,0,0,1,0,0,2,1,1]
