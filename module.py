@@ -203,7 +203,7 @@ def WireframeSphere(centre, radius,
     sphere_z = centre[2] + radius * np.cos(v)
     return sphere_x, sphere_y, sphere_z
 
-def committor2(delta,ts,st1,st2):
+def committor2(delta, ts, st1, st2):
     """
     Given:
         delta = # of time steps within which there is a switching
@@ -216,10 +216,10 @@ def committor2(delta,ts,st1,st2):
         indirect = counts for indirect switching from st1 to st2
     """
         
-    indirect=0
+    indirect = 0
     
-    II=np.where(np.isin(ts,st1))[0]
-    lenII=len(II)  
+    II = np.where(np.isin(ts,st1))[0]
+    lenII = len(II)  
     for i,item in enumerate(II):
         if(item < (len(ts) - 1)):
             iend = min(item+delta+1, len(ts))
@@ -233,70 +233,66 @@ def committor2(delta,ts,st1,st2):
     return(indirect,lenII,p)
 
 
-def ideal (pt, t_steps):
+def ideal(pt, t_steps):
     
     print(pt)
-    X=pt[:-t_steps]
-    Y=pt[t_steps:]
+    X = pt[:-t_steps]
+    Y = pt[t_steps:]
     
     return X, Y
 
-def non_recursive_LN (Xt,t_steps,ind,pt):
+def non_recursive_LN(Xt,t_steps,ind,pt):
     
-    X, Y = ideal(pt,t_steps)
+    X, Y = ideal(pt, t_steps)
     
-    model1 = LinearRegression().fit(X[:, ind, None], Y[:, ind])
-    r_sq = model1.score(X[:, ind, None], Y[:, ind])
-    intercept1, coefficients1 = model1.intercept_, model1.coef_
+    model = LinearRegression().fit(X[:, ind, None], Y[:, ind])
+    intercept, coefficients = model.intercept_, model.coef_
     
-    Ynew=model1.predict(Xt)
+    Ynew = model.predict(Xt)
     
-    return intercept1, coefficients1, Ynew
+    return intercept, coefficients, Ynew
 
-def recursive_LN (Xt,t_steps,ind,pt):
+def recursive_LN(Xt, t_steps, ind, pt):
     
-    X_tr, Y_tr = ideal(pt,t_steps)
+    X, Y = ideal(pt, 1)
     
-    model2 = LinearRegression().fit(X_tr[ind].reshape(-1,1), Y_tr[ind])
-    r_sq = model2.score(X_tr[ind].reshape(-1,1), Y_tr[ind])
-    intercept2, coefficients2 = model2.intercept_, model2.coef_
+    model = LinearRegression().fit(X[:, ind, None], Y[:, ind])
+    intercept, coefficients = model.intercept_, model.coef_
     
-    Xnew=Xt
+    Xnew = Xt
 
     for i in range(t_steps):
         if i == 0:
-            Xnew =  Xt
+            Xnew = Xt
         else:
-            Ynew = model2.predict(np.array([Xnew]).reshape(-1,1))
+            Ynew = model.predict(Xnew.reshape(-1, 1))
             
-    return intercept2, coefficients2, Ynew
+    return intercept, coefficients, Ynew
 
-def m_non_recursive_LN (Xt,t_steps,ind,pt):
+def m_non_recursive_LN(Xt, t_steps, ind, pt):
     
-    X_tr, Y_tr = ideal(pt,t_steps)
+    X, Y = ideal(pt, t_steps)
     
-    model1 = LinearRegression().fit(X_tr.T,Y_tr[ind])
-    r_sq = model1.score(X_tr.T, Y_tr[ind])
-    intercept1, coefficients1 = model1.intercept_, model1.coef_
+    model = LinearRegression().fit(X, Y[:, ind])
+    intercept, coefficients = model.intercept_, model.coef_
     
-    Ynew=model1.predict(Xt.T)
-    
-    return intercept1, coefficients1, Ynew
+    Ynew = model.predict(Xt)
 
-def m_recursive_LN (Xt,t_steps,ind,pt):
+    return intercept, coefficients, Ynew
+
+def m_recursive_LN(Xt, t_steps, ind, pt):
     
-    X_tr, Y_tr = ideal(pt,t_steps)
+    X, Y = ideal(pt, 1)
     
-    model2 = LinearRegression().fit(X_tr.T, Y_tr[ind])
-    r_sq = model2.score(X_tr.T, Y_tr[ind])
-    intercept2, coefficients2 = model2.intercept_, model2.coef_
+    model = LinearRegression().fit(X, Y[:, ind])
+    intercept, coefficients = model.intercept_, model.coef_
     
-    Xnew=Xt
+    Xnew = Xt
 
     for i in range(t_steps):
         if i == 0:
-            Xnew =  Xt
+            Xnew = Xt
         else:
-            Ynew = model2.predict(Xnew.T)
+            Ynew = model.predict(Xnew)
             
-    return intercept2, coefficients2, Ynew
+    return intercept, coefficients, Ynew
