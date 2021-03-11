@@ -291,7 +291,7 @@ def committor3(delta,ts,st1,st2):
 
 
 
-def ideal (pt=pts):
+def ideal (pt=pts,t_steps):
     
     print(pt)
     X=np.transpose(pt)
