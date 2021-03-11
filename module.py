@@ -236,20 +236,20 @@ def committor2(delta,ts,st1,st2):
 def ideal (pt, t_steps):
     
     print(pt)
-    X=np.transpose(pt)
-    Y=X[:][t_steps:-(t_steps+1)]
+    X=pt[:-t_steps]
+    Y=pt[t_steps:]
     
     return X, Y
 
 def non_recursive_LN (Xt,t_steps,ind,pt):
     
-    X_tr, Y_tr = ideal(pt,t_steps)
+    X, Y = ideal(pt,t_steps)
     
-    model1 = LinearRegression().fit(X_tr[ind].reshape(-1,1), Y_tr[ind])
-    r_sq = model1.score(X_tr[ind].reshape(-1,1), Y_tr[ind])
+    model1 = LinearRegression().fit(X[:, ind, None], Y[:, ind])
+    r_sq = model1.score(X[:, ind, None], Y[:, ind])
     intercept1, coefficients1 = model1.intercept_, model1.coef_
     
-    Ynew=model1.predict(Xt.reshape(-1,1))
+    Ynew=model1.predict(Xt)
     
     return intercept1, coefficients1, Ynew
 
