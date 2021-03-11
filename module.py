@@ -77,14 +77,15 @@ def single_traj(x0,y0,z0,r,dt,num_steps):
     return pt
 
 def trajectory(dt,num_steps,ntraj):
-    
 
     x=np.array([])
     y=np.array([])
     z=np.array([])
     pt=[]
+    
     #for n trajectories
     for j in range(ntraj):
+
         xs = np.empty(num_steps + 1)
         ys = np.empty(num_steps + 1)
         zs = np.empty(num_steps + 1)
@@ -92,11 +93,9 @@ def trajectory(dt,num_steps,ntraj):
         # Set initial values
         xs[0], ys[0], zs[0]= (xx[j], yy[j], zz[j])
         #xs[0], ys[0], zs[0] = (1., -1., 2.05)
-        
-        
+                
         for i in range(num_steps):
            
-            
             """
             EULER SCHEME
             
@@ -117,12 +116,12 @@ def trajectory(dt,num_steps,ntraj):
             ys[i + 1] = ys[i] + ((k1_y+2*k2_y+2*k3_y+k4_y) /6.0)
             zs[i + 1] = zs[i] + ((k1_z+2*k2_z+2*k3_z+k4_z) /6.0)
     
-         # Saving values for each trajectory        
-         x=np.append(x,xs,axis=0)
-         y=np.append(y,ys,axis=0)
-         z=np.append(z,zs,axis=0)
+        # Saving values for each trajectory        
+        x=np.append(x,xs,axis=0)
+        y=np.append(y,ys,axis=0)
+        z=np.append(z,zs,axis=0)
     
-         pt=np.transpose(np.array([x,y,z]))
+        pt=np.transpose(np.array([x,y,z]))
     
     return pt
 
@@ -180,7 +179,7 @@ def fixed_points(r,b):
     
     return q 
 
-def WireframeSphere(centre=[q[0],q[1],q[2]], radius=R,
+def WireframeSphere(centre, radius,
                     n_meridians=20, n_circles_latitude=None):
     """
     
@@ -291,7 +290,7 @@ def committor3(delta,ts,st1,st2):
 
 
 
-def ideal (pt=pts,t_steps):
+def ideal (pt, t_steps):
     
     print(pt)
     X=np.transpose(pt)
@@ -303,7 +302,7 @@ def ideal (pt=pts,t_steps):
                 Y[i][j]=0
     return X, Y
 
-def non_recursive_LN (Xt,t_steps,ind,pt=pts):
+def non_recursive_LN (Xt,t_steps,ind,pt):
     
     X_tr, Y_tr = ideal(pt,t_steps)
     
@@ -315,7 +314,7 @@ def non_recursive_LN (Xt,t_steps,ind,pt=pts):
     
     return intercept1, coefficients1, Ynew
 
-def recursive_LN (Xt,t_steps,ind,pt=pts):
+def recursive_LN (Xt,t_steps,ind,pt):
     
     X_tr, Y_tr = ideal(pt,t_steps)
     
@@ -333,7 +332,7 @@ def recursive_LN (Xt,t_steps,ind,pt=pts):
             
     return intercept2, coefficients2, Ynew
 
-def m_non_recursive_LN (Xt,t_steps,ind,pt=pts):
+def m_non_recursive_LN (Xt,t_steps,ind,pt):
     
     X_tr, Y_tr = ideal(pt,t_steps)
     
@@ -345,7 +344,7 @@ def m_non_recursive_LN (Xt,t_steps,ind,pt=pts):
     
     return intercept1, coefficients1, Ynew
 
-def m_recursive_LN (Xt,t_steps,ind,pt=pts):
+def m_recursive_LN (Xt,t_steps,ind,pt):
     
     X_tr, Y_tr = ideal(pt,t_steps)
     
