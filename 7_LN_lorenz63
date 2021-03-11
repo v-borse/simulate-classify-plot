@@ -24,6 +24,11 @@ import matplotlib.pyplot as plt
 
 from module mport lorenz
 from module import single_traj
+from module import ideal
+from module import non_recursive_LN
+from module import recursive_LN
+from module import m_non_recursive_LN
+from module import m_recursive_LN
     
 # ------------------MAIN BODY OF THE CODE-----------------------------    
 r=28
@@ -48,51 +53,11 @@ y_pred=[]
 y_pred1=[]
 y_pred2=[]
 t_steps=50
-index=2
+index=0
+# index can take any value (0,1,2) corresponding to X(x,y,z)
 
 #------------UNIVARIATE LINEAR REGRESSION ---------------------------------
 
-def ideal (pt=pts):
-    
-    print(pt)
-    X=np.transpose(pt)
-    for i,item in enumerate(X):
-        for j,jitem in enumerate(X[i]):
-            if ((j+t_steps)<=(len(X[i])-1)):
-                Y[i][j]=X[i][j+t_steps]
-            else:
-                Y[i][j]=0
-    return X, Y
-
-def non_recursive_LN (Xt,t_steps,ind,pt=pts):
-    
-    X_tr, Y_tr = ideal(pt)
-    
-    model1 = LinearRegression().fit(X_tr[ind].reshape(-1,1), Y_tr[ind])
-    r_sq = model1.score(X_tr[ind].reshape(-1,1), Y_tr[ind])
-    intercept1, coefficients1 = model1.intercept_, model1.coef_
-    
-    Ynew=model1.predict(Xt.reshape(-1,1))
-    
-    return intercept1, coefficients1, Ynew
-
-def recursive_LN (Xt,t_steps,ind,pt=pts):
-    
-    X_tr, Y_tr = ideal(pt)
-    
-    model2 = LinearRegression().fit(X_tr[ind].reshape(-1,1), Y_tr[ind])
-    r_sq = model2.score(X_tr[ind].reshape(-1,1), Y_tr[ind])
-    intercept2, coefficients2 = model2.intercept_, model2.coef_
-    
-    Xnew=Xt
-
-    for i in range(t_steps):
-        if i == 0:
-            Xnew =  Xt
-        else:
-            Ynew = model2.predict(np.array([Xnew]).reshape(-1,1))
-            
-    return intercept2, coefficients2, Ynew
 
 X1, Y1= ideal(pts)
 X2, Y2= ideal(pts2)
@@ -126,47 +91,7 @@ axs[1,1].set_xlabel("X(x,y,z)")
 axs[1,1].set_ylabel("Y")
 
 #---------------MULTIVARIATE LINEAR REGRESSION----------------------------------------
-def ideal (pt=pts):
-    
-    print(pt)
-    X=np.transpose(pt)
-    for i,item in enumerate(X):
-        for j,jitem in enumerate(X[i]):
-            if ((j+t_steps)<=(len(X[i])-1)):
-                Y[i][j]=X[i][j+t_steps]
-            else:
-                Y[i][j]=0
-    return X, Y
 
-def m_non_recursive_LN (Xt,t_steps,ind,pt=pts):
-    
-    X_tr, Y_tr = ideal(pt)
-    
-    model1 = LinearRegression().fit(X_tr.T,Y_tr[ind])
-    r_sq = model1.score(X_tr.T, Y_tr[ind])
-    intercept1, coefficients1 = model1.intercept_, model1.coef_
-    
-    Ynew=model1.predict(Xt.T)
-    
-    return intercept1, coefficients1, Ynew
-
-def m_recursive_LN (Xt,t_steps,ind,pt=pts):
-    
-    X_tr, Y_tr = ideal(pt)
-    
-    model2 = LinearRegression().fit(X_tr.T, Y_tr[ind])
-    r_sq = model2.score(X_tr.T, Y_tr[ind])
-    intercept2, coefficients2 = model2.intercept_, model2.coef_
-    
-    Xnew=Xt
-
-    for i in range(t_steps):
-        if i == 0:
-            Xnew =  Xt
-        else:
-            Ynew = model2.predict(Xnew.T)
-            
-    return intercept2, coefficients2, Ynew
 
 X1, Y1= ideal(pts)
 X2, Y2= ideal(pts2)
