@@ -35,7 +35,7 @@ from module import WireframeSphere
 
 r=64
 R=10
-pts=single_traj(r,0.01,10000)
+pts=single_traj(4,-14,21, r,0.01,10000)
 
 with open('pts.npy', 'wb') as h:
     np.save(h, pts)
