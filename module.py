@@ -305,7 +305,7 @@ def ideal (pt=pts,t_steps):
 
 def non_recursive_LN (Xt,t_steps,ind,pt=pts):
     
-    X_tr, Y_tr = ideal(pt)
+    X_tr, Y_tr = ideal(pt,t_steps)
     
     model1 = LinearRegression().fit(X_tr[ind].reshape(-1,1), Y_tr[ind])
     r_sq = model1.score(X_tr[ind].reshape(-1,1), Y_tr[ind])
@@ -317,7 +317,7 @@ def non_recursive_LN (Xt,t_steps,ind,pt=pts):
 
 def recursive_LN (Xt,t_steps,ind,pt=pts):
     
-    X_tr, Y_tr = ideal(pt)
+    X_tr, Y_tr = ideal(pt,t_steps)
     
     model2 = LinearRegression().fit(X_tr[ind].reshape(-1,1), Y_tr[ind])
     r_sq = model2.score(X_tr[ind].reshape(-1,1), Y_tr[ind])
@@ -335,7 +335,7 @@ def recursive_LN (Xt,t_steps,ind,pt=pts):
 
 def m_non_recursive_LN (Xt,t_steps,ind,pt=pts):
     
-    X_tr, Y_tr = ideal(pt)
+    X_tr, Y_tr = ideal(pt,t_steps)
     
     model1 = LinearRegression().fit(X_tr.T,Y_tr[ind])
     r_sq = model1.score(X_tr.T, Y_tr[ind])
@@ -347,7 +347,7 @@ def m_non_recursive_LN (Xt,t_steps,ind,pt=pts):
 
 def m_recursive_LN (Xt,t_steps,ind,pt=pts):
     
-    X_tr, Y_tr = ideal(pt)
+    X_tr, Y_tr = ideal(pt,t_steps)
     
     model2 = LinearRegression().fit(X_tr.T, Y_tr[ind])
     r_sq = model2.score(X_tr.T, Y_tr[ind])
