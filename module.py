@@ -45,7 +45,7 @@ def single_traj(x0,y0,z0,r,dt,num_steps):
     zs = np.empty(num_steps + 1)
         
     # Set initial values
-    xs[0], ys[0], zs[0]= (4, -14, 21)
+    #xs[0], ys[0], zs[0]= (4, -14, 21)
     #xs[0], ys[0], zs[0] = (1., -1., 2.05)
         
         
@@ -93,33 +93,13 @@ def trajectory(dt,num_steps,ntraj):
         # Set initial values
         xs[0], ys[0], zs[0]= (xx[j], yy[j], zz[j])
         #xs[0], ys[0], zs[0] = (1., -1., 2.05)
-                
-        for i in range(num_steps):
-           
-            """
-            EULER SCHEME
-            
-            dt*x_dot, dt*y_dot, dt*z_dot = lorenz(xs[i], ys[i], zs[i])
-            xs[i + 1] = xs[i] + dt*x_dot
-            ys[i + 1] = ys[i] + dt*y_dot
-            zs[i + 1] = zs[i] + dt*z_dot
-            """
-            # RK 4 SCHEME
-            
-            
-            
-            k1_x, k1_y, k1_z = lorenz(xs[i], ys[i], zs[i], dt)
-            k2_x, k2_y, k2_z = lorenz(xs[i]+0.5*k1_x, ys[i]+0.5*k1_y, zs[i]+0.5*k1_z, dt)
-            k3_x, k3_y, k3_z = lorenz(xs[i]+0.5*k2_x, ys[i]+0.5*k2_y, zs[i]+0.5*k2_z, dt)
-            k4_x, k4_y, k4_z = lorenz(xs[i]+k3_x, ys[i]+k3_y, zs[i]+k3_z, dt)
-            xs[i + 1] = xs[i] + ((k1_x+2*k2_x+2*k3_x+k4_x) /6.0)
-            ys[i + 1] = ys[i] + ((k1_y+2*k2_y+2*k3_y+k4_y) /6.0)
-            zs[i + 1] = zs[i] + ((k1_z+2*k2_z+2*k3_z+k4_z) /6.0)
+        PT=single_traj(xs[0],ys[0],zs[0],r,dt,num_steps)        
+        
     
         # Saving values for each trajectory        
-        x=np.append(x,xs,axis=0)
-        y=np.append(y,ys,axis=0)
-        z=np.append(z,zs,axis=0)
+        x=np.append(PT[0][:],xs,axis=0)
+        y=np.append(PT[1][:],ys,axis=0)
+        z=np.append(PT[2][:],zs,axis=0)
     
         pt=np.transpose(np.array([x,y,z]))
     
