@@ -4,17 +4,9 @@ Created on Fri Jan 29 04:25:27 2021
 @author: vborse
 """
 
-from IPython.display import clear_output, display, HTML
+
 
 import numpy as np
-from scipy import integrate
-
-from matplotlib import pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.colors import cnames
-from matplotlib import animation
-import random
-
 from module import lorenz
 from module import trajectory
 
