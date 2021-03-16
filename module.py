@@ -273,7 +273,8 @@ def m_non_recursive_LN(Xt, t_steps, ind, pt):
     
     X, Y = ideal(pt, t_steps)
     
-    model = LinearRegression().fit(X, Y[:, ind])
+    model1 = LinearRegression().fit(X_tr[:, :],Y_tr[:, ind])
+    r_sq = model1.score(X_tr[:, :], Y_tr[:, ind])
     intercept, coefficients = model.intercept_, model.coef_
     
     Ynew = model.predict(Xt)
@@ -284,7 +285,8 @@ def m_recursive_LN(Xt, t_steps, ind, pt):
     
     X, Y = ideal(pt, 1)
     
-    model = LinearRegression().fit(X, Y[:, ind])
+    model2 = LinearRegression().fit(X_tr[:, :], Y_tr[:, ind, None])
+    r_sq = model2.score(X_tr[:, :], Y_tr[:, ind, None])
     intercept, coefficients = model.intercept_, model.coef_
     
     Xnew = Xt
