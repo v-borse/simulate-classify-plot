@@ -105,7 +105,7 @@ def trajectory(dt,num_steps,ntraj):
     
     return pt
 
-def classify2(_pt,q):
+def classify2(R,_pt,q):
     """
     Given:
     _pt: takes vector (set of coordinates lying on trajectories) 
