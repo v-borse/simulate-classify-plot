@@ -264,10 +264,11 @@ def recursive_LN(Xt, t_steps, ind, pt):
     for i in range(t_steps):
         if i == 0:
             Xnew = Xt
+            Xnew = model.predict(Xnew.reshape(-1, 1))
         else:
-            Ynew = model.predict(Xnew.reshape(-1, 1))
+            Xnew = model.predict(Xnew.reshape(-1, 1))
             
-    return intercept, coefficients, Ynew
+    return intercept, coefficients, Xnew
 
 def m_non_recursive_LN(Xt, t_steps, ind, pt):
     
@@ -292,7 +293,8 @@ def m_recursive_LN(Xt, t_steps, ind, pt):
     for i in range(t_steps):
         if i == 0:
             Xnew = Xt
+            Xnew = model.predict(Xnew)
         else:
-            Ynew = model.predict(Xnew)
+            Xnew = model.predict(Xnew)
             
-    return intercept, coefficients, Ynew
+    return intercept, coefficients, Xnew
