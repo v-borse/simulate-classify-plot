@@ -42,7 +42,7 @@ X=np.transpose(pts)
 covMatrix = np.corrcoef(X,bias=True)
 y=np.dot(covMatrix,X)
 Y=np.dot(covMatrix,X)
-Y2=np.dot(covMatrix,X2)
+Y2=np.dot(covMatrix,X)
 y_pred=np.dot(covMatrix,X)
 
 for i,item in enumerate(X):
