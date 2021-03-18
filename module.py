@@ -45,8 +45,8 @@ def single_traj(x0,y0,z0,r,dt,num_steps):
     zs = np.empty(num_steps + 1)
         
     # Set initial values
-    #xs[0], ys[0], zs[0]= (4, -14, 21)
-    #xs[0], ys[0], zs[0] = (1., -1., 2.05)
+    xs[0], ys[0], zs[0]= (x0, y0, z0) 
+    
         
         
     for i in range(num_steps):
@@ -274,27 +274,46 @@ def m_non_recursive_LN(Xt, t_steps, ind, pt):
     
     X, Y = ideal(pt, t_steps)
     
-    model = LinearRegression().fit(X[:, ind, None], Y[:, ind])
-    intercept, coefficients = model.intercept_, model.coef_
     
-    Ynew = model.predict(Xt)
-
-    return intercept, coefficients, Ynew
+    
+    model0= LinearRegression().fit(X[:, :], Y[:, 0, None])
+    model1= LinearRegression().fit(X[:, :], Y[:, 1, None])
+    model2= LinearRegression().fit(X[:, :], Y[:, 2, None])
+    
+    #intercept, coefficients = model.intercept_, model.coef_
+    
+    Ynew0 = model0.predict(Xt)
+    Ynew1 = model1.predict(Xt)
+    Ynew2 = model2.predict(Xt)
+    
+    return Ynew0, Ynew1, Ynew2
 
 def m_recursive_LN(Xt, t_steps, ind, pt):
     
     X, Y = ideal(pt, 1)
     
-    model = LinearRegression().fit(X[:, ind, None], Y[:, ind])
-    intercept, coefficients = model.intercept_, model.coef_
+    
+    
+    model0= LinearRegression().fit(X[:, :], Y[:, 0, None])
+    model1= LinearRegression().fit(X[:, :], Y[:, 1, None])
+    model2= LinearRegression().fit(X[:, :], Y[:, 2, None])
+    #intercept, coefficients = model.intercept_, model.coef_
     
     Xnew = Xt
 
     for i in range(t_steps):
         if i == 0:
             Xnew = Xt
-            Xnew = model.predict(Xnew)
+            Xnew0= model0.predict(Xnew)
+            Xnew1= model1.predict(Xnew)
+            Xnew2= model2.predict(Xnew)
         else:
-            Xnew = model.predict(Xnew)
             
-    return intercept, coefficients, Xnew
+            Xnew[:, 0, None]=Xnew0
+            Xnew[:, 1, None]=Xnew1
+            Xnew[:, 2, None]=Xnew2
+            Xnew0= model0.predict(Xnew)
+            Xnew1= model1.predict(Xnew)
+            Xnew2= model2.predict(Xnew)
+            
+    return  Xnew0, Xnew1, Xnew2
