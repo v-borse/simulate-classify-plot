@@ -161,6 +161,7 @@ def plot2(X2,Y2,YPx,YPy,YPz,YRP):
     ax1.set_ylabel('y_pred1[1]')
     ax1.set_zlabel('y_pred1[2]')
     plt.show()
+<<<<<<< HEAD
 
 
 def mathematical_rec(a,b,t_steps):
@@ -168,6 +169,9 @@ def mathematical_rec(a,b,t_steps):
     beta = b*((1-math.pow(a,t_steps+1))/(1-a))
     
     return alpha, beta
+=======
+                
+>>>>>>> 9f011a3cacb08856f908ac82669fc442156e8746
     
 #---------MAIN BODY OF THE CODE------------------
 
@@ -237,12 +241,21 @@ Yr = r_predict(X2,t_steps)
 
 #---------Plot1--------------------------
 
+<<<<<<< HEAD
 #plot1(X2,Y2,Ynrx,Yr,0)
 #plot1(X2,Y2,Ynry,Yr,1)
 #plot1(X2,Y2,Ynrz,Yr,2)
 #
 ##-------Plot2--------------------------------
 #plot2(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
+=======
+plot1(X2,Y2,Ynrx,Yr,0)
+plot1(X2,Y2,Ynry,Yr,1)
+plot1(X2,Y2,Ynrz,Yr,2)
+
+#-------Plot2--------------------------------
+plot2(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
+>>>>>>> 9f011a3cacb08856f908ac82669fc442156e8746
 
 
 
@@ -302,6 +315,7 @@ YR = R_predict(X2,t_steps)
 
 #-----------------PLOT1----------------------
 
+<<<<<<< HEAD
 #plot1(X2,Y2,YNRx,YR,0)
 #plot1(X2,Y2,YNRy,YR,1)
 #plot1(X2,Y2,YNRz,YR,2)
@@ -312,3 +326,12 @@ YR = R_predict(X2,t_steps)
 
 alpha1,beta1=mathematical_rec(rx_i,rx_c,t_steps)
 print(alpha1,beta1)
+=======
+plot1(X2,Y2,YNRx,YR,0)
+plot1(X2,Y2,YNRy,YR,1)
+plot1(X2,Y2,YNRz,YR,2)
+
+#---------------PLOT2---------------------------
+
+plot2(X2,Y2,YNRx,YNRy,YNRz,YR)
+>>>>>>> 9f011a3cacb08856f908ac82669fc442156e8746
