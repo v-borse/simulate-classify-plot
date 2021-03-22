@@ -30,35 +30,28 @@ from module import ideal
 #from module import m_non_recursive_LN
 #from module import m_recursive_LN
 
-def ideal(pt, t_steps):
-    
-    print(pt)
-    X = pt[:-t_steps]
-    Y = pt[t_steps:]
-    
-    return X, Y
 
 
 
-def r_predict_uni(Xt,t_steps):
+def r_predict_uni(Xt,modelx,modely,modelz,t_steps):
 
     for i in range(t_steps):
         if i == 0:
             Xnew = np.copy(Xt)
-        Xnew[:, 0] = rx.predict(Xnew[:, 0, None])
-        Xnew[:, 1] = rx.predict(Xnew[:, 1, None])
-        Xnew[:, 2] = rx.predict(Xnew[:, 2, None])
+        Xnew[:, 0] = modelx.predict(Xnew[:, 0, None])
+        Xnew[:, 1] = modely.predict(Xnew[:, 1, None])
+        Xnew[:, 2] = modelz.predict(Xnew[:, 2, None])
             
     return Xnew
 
-def R_predict_multi(Xt,t_steps):
+def R_predict_multi(Xt,modelx,modely,modelz,t_steps):
       
     for i in range(t_steps):
         if i == 0:
             Xnew = np.copy(Xt)
-        Xnew0 = Rx.predict(Xnew)
-        Xnew1 = Ry.predict(Xnew)
-        Xnew2 = Rz.predict(Xnew)
+        Xnew0 = modelx.predict(Xnew)
+        Xnew1 = modely.predict(Xnew)
+        Xnew2 = modelz.predict(Xnew)
         Xnew[:, 0] = Xnew0
         Xnew[:, 1] = Xnew1
         Xnew[:, 2] = Xnew2
@@ -171,27 +164,27 @@ index = 0
 
 """--------UNIVARIATE----------"""
 
-X1, Y1 = ideal(pts,t_steps)
+X1, Y1 = ideal(pts,1)
 X2, Y2 = ideal(pts2,t_steps)
-
+X3, Y3 = ideal(pts,t_steps)
 
 #--------NON-RECURSIVE (MODEL)-------------
-nrx = LinearRegression().fit(X1[:, 0, None], Y1[:, 0])
-nry = LinearRegression().fit(X1[:, 1, None], Y1[:, 1])
-nrz = LinearRegression().fit(X1[:, 2, None], Y1[:, 2])
+nrx = LinearRegression().fit(X3[:, 0, None], Y3[:, 0])
+nry = LinearRegression().fit(X3[:, 1, None], Y3[:, 1])
+nrz = LinearRegression().fit(X3[:, 2, None], Y3[:, 2])
 
 nrx_i = nrx.intercept_
 nrx_c = nrx.coef_
-nrx_rsq = nrx.score(X1[:, 0, None], Y1[:, 0])
+nrx_rsq = nrx.score(X3[:, 0, None], Y3[:, 0])
 
 nry_i = nry.intercept_
 nry_c = nry.coef_
-nry_rsq = nry.score(X1[:, 1, None], Y1[:, 1])
+nry_rsq = nry.score(X3[:, 1, None], Y3[:, 1])
 
 
 nrz_i = nrz.intercept_
 nrz_c = nrz.coef_
-nrz_rsq = nrz.score(X1[:, 2, None], Y1[:, 2])
+nrz_rsq = nrz.score(X3[:, 2, None], Y3[:, 2])
 
 
 
@@ -200,9 +193,9 @@ Ynrx =nrx.predict(X2[:, 0, None])
 Ynry =nry.predict(X2[:, 1, None])
 Ynrz =nrz.predict(X2[:, 2, None])
 
-nrx_rsq2=nrx.score(X1[:, 0, None], Y2[:, 0])
-nry_rsq2=nry.score(X1[:, 1, None], Y2[:, 1])
-nrz_rsq2=nrz.score(X1[:, 2, None], Y2[:, 2])
+nrx_rsq2=nrx.score(X2[:, 0, None], Y2[:, 0])
+nry_rsq2=nry.score(X2[:, 1, None], Y2[:, 1])
+nrz_rsq2=nrz.score(X2[:, 2, None], Y2[:, 2])
 
 nrx_msq = mean_squared_error(Y2[:, 0], Ynrx)
 nry_msq = mean_squared_error(Y2[:, 1], Ynry)
@@ -229,12 +222,12 @@ rz_c = rz.coef_
 
 rz_msq = mean_squared_error(X1[:, 2, None], Y1[:, 2])
 
-Yr = r_predict_uni(X2,t_steps)
+Yr = r_predict_uni(X2,rx,ry,rz,t_steps)
 
 
-rx_msq = mean_squared_error(Y2[:, 0], Yr[:, 0])
-ry_msq = mean_squared_error(Y2[:, 1], Yr[:, 1])
-rz_msq = mean_squared_error(Y2[:, 2], Yr[:, 2])
+rx_msq2 = mean_squared_error(Y2[:, 0], Yr[:, 0])
+ry_msq2 = mean_squared_error(Y2[:, 1], Yr[:, 1])
+rz_msq2 = mean_squared_error(Y2[:, 2], Yr[:, 2])
 
 #---------Plot1--------------------------
 
@@ -260,24 +253,24 @@ rz_msq = mean_squared_error(Y2[:, 2], Yr[:, 2])
 
 X1, Y1 = ideal(pts,1)
 X2, Y2 = ideal(pts2,1)
-
+X3, Y3 = ideal(pts,t_steps)
 #--------NON-RECURSIVE (MODEL)-------------
 
-NRx = LinearRegression().fit(X1, Y1[:, 0, None])
-NRy = LinearRegression().fit(X1, Y1[:, 1, None])
-NRz = LinearRegression().fit(X1, Y1[:, 2, None])
+NRx = LinearRegression().fit(X3, Y3[:, 0, None])
+NRy = LinearRegression().fit(X3, Y3[:, 1, None])
+NRz = LinearRegression().fit(X3, Y3[:, 2, None])
 
 NRx_i = NRx.intercept_
 NRx_c = NRx.coef_
-NRx_rsq = NRx.score(X1, Y1[:, 0, None])
+NRx_rsq = NRx.score(X3, Y3[:, 0, None])
 
 NRy_i = NRy.intercept_
 NRy_c = NRy.coef_
-NRy_rsq = NRy.score(X1, Y1[:, 1, None])
+NRy_rsq = NRy.score(X3, Y3[:, 1, None])
 
 NRz_i = NRz.intercept_
 NRz_c = NRz.coef_
-NRz_rsq = NRz.score(X1, Y1[:, 2, None])
+NRz_rsq = NRz.score(X3, Y3[:, 2, None])
 
 #---------NON-RECURSIVE (PREDICT)----------------------
 
@@ -289,9 +282,9 @@ NRx_rsq2=NRx.score(X2, Y2[:, 0, None])
 NRy_rsq2=NRy.score(X2, Y2[:, 1, None])
 NRz_rsq2=NRz.score(X2, Y2[:, 2, None])
 
-NRx_msq = mean_squared_error(Y2[:, 0], YNRx)
-NRy_msq = mean_squared_error(Y2[:, 1], YNRy)
-NRz_msq = mean_squared_error(Y2[:, 2], YNRz)
+NRx_msq2 = mean_squared_error(Y2[:, 0], YNRx)
+NRy_msq2= mean_squared_error(Y2[:, 1], YNRy)
+NRz_msq2 = mean_squared_error(Y2[:, 2], YNRz)
 
 
 #---------RECURSIVE  (MODEL)--------------------
@@ -311,7 +304,8 @@ Ry_c = Ry.coef_
 Rz_i = Rz.intercept_
 Rz_c = Rz.coef_
 
-YR = R_predict_multi(X2,t_steps)
+YR = R_predict_multi(X2,Rx,Ry,Rz,t_steps)
+
 
 
 Rx_msq = mean_squared_error(Y2[:,0], YR[:,0])
