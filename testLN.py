@@ -24,27 +24,12 @@ import matplotlib.pyplot as plt
 
 from module import lorenz
 from module import single_traj
-#from module import ideal
+from module import ideal
 #from module import non_recursive_LN
 #from module import recursive_LN
 #from module import m_non_recursive_LN
 #from module import m_recursive_LN
 
-def ideal(pt, t_steps):
-    
-    print(pt)
-    X = pt[:-t_steps-2]
-    Y = pt[1:-t_steps-1]+pt[2:-t_steps]
-    
-    return X, Y
-
-def ideal2(pt, t_steps):
-    
-    print(pt)
-    X = pt[:-t_steps]
-    Y = pt[t_steps:]
-    
-    return X, Y
 
 
 def r_predict_uni(Xt,modelx,modely,modelz,t_steps):
@@ -76,59 +61,82 @@ def R_predict_multi(Xt,modelx,modely,modelz,t_steps):
 
 def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     
-    fig, axs = plt.subplots(2, 2, sharex=False, sharey=False, figsize=(15, 5))
+    fig, axs = plt.subplots(3, 2, sharex=False, sharey=False, figsize=(15, 5))
     fig.suptitle(' Linear Regression; dt=0.01')
     
     axs[0,0].scatter(Yp, Y2[:, index],s=2)
     axs[0,0].plot(Y2[:, index],Y2[:, index],'r')
+    axs[0,0].set_xlim([-50,50])
+    axs[0,0].set_ylim([-50,50])
     axs[0,0].set_xlabel("y_pred")
     axs[0,0].set_ylabel("y_ideal")
     axs[0,0].set_title("Non-recursive LN")
     
     axs[0,1].scatter(Yrp[:, index], Y2[:, index], s=2)
     axs[0,1].plot(Y2[:, index], Y2[:, index], 'r')
+    axs[0,1].set_xlim([-50,50])
+    axs[0,1].set_ylim([-50,50])
     axs[0,1].set_xlabel("y_pred")
     axs[0,1].set_ylabel("y_ideal")
     axs[0,1].set_title("Recursive LN")
     
-    axs[1,0].plot(Yp-Y2[:, index], 'b')
-    axs[1,0].plot(Yrp[:, index]-Y2[:, index], 'r')
-    axs[1,0].set_ylabel("error")
-    axs[1,0].set_xlabel("time_steps")
-    axs[1,0].set_title("Errors for LN")
+       
+    axs[1,0].scatter(X2[:, index], Y2[:, index], s=2)
+    axs[1,0].scatter(X2[:, index], Yp, s=2)
+    axs[1,0].scatter(X2[:, index], Yrp[:, index], s=2) 
+    axs[1,0].set_xlim([-50,50])
+    axs[1,0].set_ylim([-50,50])
+    axs[1,0].set_xlabel("X(x,y,z)")
+    axs[1,0].set_ylabel("Y")
+    axs[1,0].set_title("X and Y")
     
-    axs[1,1].scatter(X2[:, index], Y2[:, index], s=2)
-    axs[1,1].scatter(X2[:, index], Yp, s=2)
-    axs[1,1].scatter(X2[:, index], Yrp[:, index], s=2) 
-    axs[1,1].set_xlabel("X(x,y,z)")
-    axs[1,1].set_ylabel("Y")
+    axs[1,1].plot(X2[:, index])
+    axs[1,1].plot(Y2[:, index])
+    axs[1,1].plot(Yp)
+    axs[1,1].plot(Yrp[:, index])
+    axs[1,1].set_ylim([-60,60])
+    axs[1,1].set_xlabel("Time series")
+    
+    
+    
+    axs[2,0].plot(Yp-Y2[:, index], 'b')
+    axs[2,0].plot(Yrp[:, index]-Y2[:, index], 'r')
+    axs[2,0].set_ylim([-50,50])
+    axs[2,0].set_ylabel("error")
+    axs[2,0].set_xlabel("time_steps")
+    axs[2,0].set_title("Errors for LN")
+    
+    
+    
+    axs[2,1].plot(Yp-Y2[:, index], 'b')
+    axs[2,1].plot((Yrp[:, index]-Y2[:, index])*(Yrp[:, index]-Y2[:, index]), 'r')
+    axs[2,1].set_ylim([-50,150])
+    axs[2,1].set_ylabel("squared error")
+    axs[2,1].set_xlabel("time_steps")
+    axs[2,1].set_title("Squared Errors for LN")
+    
     plt.show()
-    
-    plt.plot(X2[:, index])
-    plt.plot(Y2[:, index])
-    plt.plot(Yp)
-    plt.plot(Yrp[:, index])
-    plt.xlabel("Time series")
-    plt.show()
-    
-    
     #plt.scatter(y_pred1, y_pred2)
     
 def plot_traj(X2,Y2,YPx,YPy,YPz,YRP):
     
-    fig1 = plt.figure()
-    ax1 = fig1.add_subplot(111, projection='3d')
+    fig1 = plt.figure(figsize=(15,10))
+    ax1 = fig1.add_subplot(131, projection='3d')
     #ax1.scatter(y_pred10, y_pred11, y_pred12,color='g', alpha=1)
-    ax1.scatter(X2.T[0], X2.T[1], X2.T[2],color='b', alpha=.01)
+    ax1.scatter(X2.T[0], X2.T[1], X2.T[2],color='r', alpha=.01)
+    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b', alpha=.009)
+    
     ax1.set_xlabel('X[0] ')
     ax1.set_ylabel('X[1] ')
     ax1.set_zlabel('X[2] ')
     
     
     
-    fig1 = plt.figure()
-    ax1 = fig1.add_subplot(111, projection='3d')
-    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='r')
+    fig1 = plt.figure(figsize=(15,10))
+    ax1 = fig1.add_subplot(132, projection='3d')
+    
+    
+    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b',alpha=0.009)
     ax1.set_xlabel('Y2[0]')
     ax1.set_ylabel('Y2[1]')
     ax1.set_zlabel('Y2[2]')
@@ -137,20 +145,46 @@ def plot_traj(X2,Y2,YPx,YPy,YPz,YRP):
     
     #fig2 = plt.figure()
     #ax2 = fig2.add_subplot(111, projection='3d')
-    fig1 = plt.figure()
-    ax1 = fig1.add_subplot(111, projection='3d')
-    ax1.scatter(YRP[0], YRP[1], YRP[2],color='y')
+    fig1 = plt.figure(figsize=(15,10))
+    ax1 = fig1.add_subplot(133, projection='3d')
+    
+    ax1.scatter(YRP[:,0], YRP[:,1], YRP[:,2],color='y',alpha=0.05)
+    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b',alpha=0.009)
     ax1.set_xlabel('y_pred2[0]; recursive')
     ax1.set_ylabel('y_pred2[1]')
     ax1.set_zlabel('y_pred2[2]')
     
-    fig1 = plt.figure()
-    ax1 = fig1.add_subplot(111, projection='3d')
-    ax1.scatter(YPx, YPy, YPz, color='g')
+    fig1 = plt.figure(figsize=(15,10))
+    ax1 = fig1.add_subplot(134, projection='3d')
+    ax1.scatter(YPx, YPy, YPz, color='g',alpha=0.05)
+    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b',alpha=0.009)
     ax1.set_xlabel('y_pred1[0]; non recursive')
     ax1.set_ylabel('y_pred1[1]')
     ax1.set_zlabel('y_pred1[2]')
     plt.show()
+    
+    
+def plot_traj2(X2,Y2,YPx,YPy,YPz,YRP):
+    
+    XLIMS = [[-50, 50]] 
+    YLIMS = [[-50, 50]]
+    ZLIMS = [[0, 50]] 
+
+    for j, (x, y, z , xlim, ylim, zlim) in enumerate(zip(YPx, YPy, YPz, XLIMS, YLIMS, ZLIMS)):
+        #fig1 = plt.figure()
+        #ax1 = fig1.add_subplot(111, projection='3d')
+        ax1 = plt.subplot(1, 3, j + 1,projection='3d')
+        ax1.scatter(YRP[:,0], YRP[:,1], YRP[:,2],color='y',alpha=0.05)
+        ax1.scatter(YPx, YPy, YPz, color='g',alpha=0.05)
+        ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b',alpha=0.009)
+        
+
+        
+        ax1.set_xlim(xlim)
+        ax1.set_ylim(ylim)
+        ax1.set_zlim(zlim)
+
+
 
 
 
@@ -246,19 +280,13 @@ rz_msq2 = mean_squared_error(Y2[:, 2], Yr[:, 2])
 #---------Plot1--------------------------
 
 
-#plot1(X2,Y2,Ynrx,Yr,0)
-#plot1(X2,Y2,Ynry,Yr,1)
-#plot1(X2,Y2,Ynrz,Yr,2)
-#
-##-------Plot2--------------------------------
-#plot2(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
+plot_predicted_ts(X2,Y2,Ynrx,Yr,0)
+plot_predicted_ts(X2,Y2,Ynry,Yr,1)
+plot_predicted_ts(X2,Y2,Ynrz,Yr,2)
 
-#plot1(X2,Y2,Ynrx,Yr,0)
-#plot1(X2,Y2,Ynry,Yr,1)
-#plot1(X2,Y2,Ynrz,Yr,2)
-#
+
 ##-------Plot2--------------------------------
-#plot2(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
+plot_traj(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
 
 
 
@@ -329,13 +357,13 @@ Rz_msq = mean_squared_error(Y2[:, 2], YR[:, 2])
 #-----------------PLOT1----------------------
 
 
-#plot1(X2,Y2,YNRx,YR,0)
-#plot1(X2,Y2,YNRy,YR,1)
-#plot1(X2,Y2,YNRz,YR,2)
-#
-##---------------PLOT2---------------------------
-#
-#plot2(X2,Y2,YNRx,YNRy,YNRz,YR)
+plot_predicted_ts(X2,Y2,YNRx,YR,0)
+plot_predicted_ts(X2,Y2,YNRy,YR,1)
+plot_predicted_ts(X2,Y2,YNRz,YR,2)
+
+#---------------PLOT2---------------------------
+
+plot_traj(X2,Y2,YNRx,YNRy,YNRz,YR)
 
 
 alpha1,beta1=mathematical_rec(rx_i,rx_c,t_steps)
