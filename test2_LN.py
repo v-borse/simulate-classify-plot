@@ -91,10 +91,16 @@ data = {'XTx':XT[:,0],
 # Create DataFrame 
 df = pd.DataFrame(data) 
 
+<<<<<<< HEAD
 
 # prediction with sklearn
 x=df[['XT1x','XT2x']] #Univariate
 x=df[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']] # Multivariate
+=======
+# prediction with sklearn
+
+x=df[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']]
+>>>>>>> 19be43470169858c034b9cd0ef4b2f5e052b59d7
 y=df['YTx']
 regr = linear_model.LinearRegression()
 regr.fit(x, y)
@@ -111,6 +117,7 @@ predictions = model.predict(x)
 print_model = model.summary()
 print(print_model)
   
+<<<<<<< HEAD
 #plt.plot(predictions)
 #plt.plot(df.YTx,'r')
 plt.plot(df.YTx-predictions,'k')
@@ -138,3 +145,8 @@ plt.plot(df.YTx-predictions,'k')
 
 
 
+=======
+plt.plot(predictions)
+plt.plot(df.YTx,'r')
+plt.plot(df.YTx-predictions,'k')
+>>>>>>> 19be43470169858c034b9cd0ef4b2f5e052b59d7
