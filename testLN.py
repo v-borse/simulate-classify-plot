@@ -24,16 +24,27 @@ import matplotlib.pyplot as plt
 
 from module import lorenz
 from module import single_traj
-from module import ideal
+#from module import ideal
 #from module import non_recursive_LN
 #from module import recursive_LN
 #from module import m_non_recursive_LN
 #from module import m_recursive_LN
 
-<<<<<<< HEAD
+def ideal(pt, t_steps):
+    
+    print(pt)
+    X = pt[:-t_steps-2]
+    Y = pt[1:-t_steps-1]+pt[2:-t_steps]
+    
+    return X, Y
 
-=======
->>>>>>> 030ea82f211796c9da9edbd39bc0bbb803884fdf
+def ideal2(pt, t_steps):
+    
+    print(pt)
+    X = pt[:-t_steps]
+    Y = pt[t_steps:]
+    
+    return X, Y
 
 
 def r_predict_uni(Xt,modelx,modely,modelz,t_steps):
