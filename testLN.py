@@ -30,14 +30,6 @@ from module import ideal
 #from module import m_non_recursive_LN
 #from module import m_recursive_LN
 
-def ideal(pt, t_steps):
-    
-    print(pt)
-    X = pt[:-t_steps]
-    Y = pt[t_steps:]
-    
-    return X, Y
-
 
 
 def r_predict_uni(Xt,t_steps):
