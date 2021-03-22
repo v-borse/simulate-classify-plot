@@ -30,7 +30,10 @@ from module import ideal
 #from module import m_non_recursive_LN
 #from module import m_recursive_LN
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 030ea82f211796c9da9edbd39bc0bbb803884fdf
 
 
 def r_predict_uni(Xt,modelx,modely,modelz,t_steps):
