@@ -38,51 +38,33 @@ def ideal(pt, t_steps):
     
     return X, Y
 
+
+
 def r_predict_uni(Xt,t_steps):
-    
-    Xnew = Xt
 
     for i in range(t_steps):
         if i == 0:
-            Xnew = Xt
-            Xnew0= rx.predict(Xnew[:, 0, None].reshape(-1, 1))
-            Xnew1= ry.predict(Xnew[:, 1, None].reshape(-1, 1))
-            Xnew2= rz.predict(Xnew[:, 2, None].reshape(-1, 1))
-        else:
-            print(np.shape(Xnew[:, 0, None]))
-            print(np.shape(Xnew0[None].T))
-            print(Xnew0)
-            Xnew[:, 0, None]=Xnew0[None].T
-            Xnew[:, 1, None]=Xnew1[None].T
-            Xnew[:, 2, None]=Xnew2[None].T
-            Xnew0= rx.predict(Xnew[:, 0, None].reshape(-1, 1))
-            Xnew1= ry.predict(Xnew[:, 1, None].reshape(-1, 1))
-            Xnew2= rz.predict(Xnew[:, 2, None].reshape(-1, 1))
+            Xnew = np.copy(Xt)
+        Xnew[:, 0] = rx.predict(Xnew[:, 0, None])
+        Xnew[:, 1] = rx.predict(Xnew[:, 1, None])
+        Xnew[:, 2] = rx.predict(Xnew[:, 2, None])
             
     return Xnew
-        
 
 def R_predict_multi(Xt,t_steps):
-    Xnew = Xt
-    
+      
     for i in range(t_steps):
         if i == 0:
-            Xnew = Xt
-            Xnew0= Rx.predict(Xnew)
-            Xnew1= Ry.predict(Xnew)
-            Xnew2= Rz.predict(Xnew)
-            
-        else:
-            
-            
-            Xnew[:, 0, None]=Xnew0
-            Xnew[:, 1, None]=Xnew1
-            Xnew[:, 2, None]=Xnew2
-            Xnew0= Rx.predict(Xnew)
-            Xnew1= Ry.predict(Xnew)
-            Xnew2= Rz.predict(Xnew)
-            
+            Xnew = np.copy(Xt)
+        Xnew0 = Rx.predict(Xnew)
+        Xnew1 = Ry.predict(Xnew)
+        Xnew2 = Rz.predict(Xnew)
+        Xnew[:, 0] = Xnew0
+        Xnew[:, 1] = Xnew1
+        Xnew[:, 2] = Xnew2
+         
     return Xnew
+
             
 
 def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
@@ -166,8 +148,8 @@ def plot_traj(X2,Y2,YPx,YPy,YPz,YRP):
 
 
 def mathematical_rec(a,b,t_steps):
-    alpha = math.pow(a,t_steps)
-    beta = b*((1-math.pow(a,t_steps-1))/(1-a))
+    beta = math.pow(a,t_steps)
+    alpha = b*((1-math.pow(a,t_steps-1))/(1-a))
     
     return alpha, beta
 
@@ -191,6 +173,7 @@ index = 0
 
 X1, Y1 = ideal(pts,t_steps)
 X2, Y2 = ideal(pts2,t_steps)
+
 
 #--------NON-RECURSIVE (MODEL)-------------
 nrx = LinearRegression().fit(X1[:, 0, None], Y1[:, 0])
@@ -217,9 +200,13 @@ Ynrx =nrx.predict(X2[:, 0, None])
 Ynry =nry.predict(X2[:, 1, None])
 Ynrz =nrz.predict(X2[:, 2, None])
 
-nrx_msq = mean_squared_error(Y1[:, 0], Ynrx)
-nry_msq = mean_squared_error(Y1[:, 1], Ynry)
-nrz_msq = mean_squared_error(Y1[:, 2], Ynrz)
+nrx_rsq2=nrx.score(Y2[:, 0,None], Ynrx)
+nry_rsq2=nry.score(Y2[:, 1,None], Ynry)
+nrz_rsq2=nrz.score(Y2[:, 2,None], Ynrz)
+
+nrx_msq = mean_squared_error(Y2[:, 0], Ynrx)
+nry_msq = mean_squared_error(Y2[:, 1], Ynry)
+nrz_msq = mean_squared_error(Y2[:, 2], Ynrz)
 
 #---------RECURSIVE  (MODEL)--------------------
 
@@ -229,24 +216,25 @@ rz = LinearRegression().fit(X1[:, 2, None], Y1[:, 2])
 
 rx_i = rx.intercept_
 rx_c = rx.coef_
-rx_rsq = rx.score(X1[:, 0, None], Y1[:, 0])
+
 rx_msq = mean_squared_error(X1[:, 0, None], Y1[:, 0])
 
 ry_i = ry.intercept_
 ry_c = ry.coef_
-ry_rsq = ry.score(X1[:, 1, None], Y1[:, 1])
+
 ry_msq = mean_squared_error(X1[:, 1, None], Y1[:, 1])
 
 rz_i = rz.intercept_
 rz_c = rz.coef_
-rz_rsq = rz.score(X1[:, 2, None], Y1[:, 2])
+
 rz_msq = mean_squared_error(X1[:, 2, None], Y1[:, 2])
 
 Yr = r_predict_uni(X2,t_steps)
 
-rx_msq = mean_squared_error(Y1[:, 0], Yr[:, 0])
-ry_msq = mean_squared_error(Y1[:, 1], Yr[:, 1])
-rz_msq = mean_squared_error(Y1[:, 2], Yr[:, 2])
+
+rx_msq = mean_squared_error(Y2[:, 0], Yr[:, 0])
+ry_msq = mean_squared_error(Y2[:, 1], Yr[:, 1])
+rz_msq = mean_squared_error(Y2[:, 2], Yr[:, 2])
 
 #---------Plot1--------------------------
 
@@ -275,21 +263,21 @@ X2, Y2 = ideal(pts2,1)
 
 #--------NON-RECURSIVE (MODEL)-------------
 
-NRx = LinearRegression().fit(X1[:, :], Y1[:, 0, None])
-NRy = LinearRegression().fit(X1[:, :], Y1[:, 1, None])
-NRz = LinearRegression().fit(X1[:, :], Y1[:, 2, None])
+NRx = LinearRegression().fit(X1, Y1[:, 0, None])
+NRy = LinearRegression().fit(X1, Y1[:, 1, None])
+NRz = LinearRegression().fit(X1, Y1[:, 2, None])
 
 NRx_i = NRx.intercept_
 NRx_c = NRx.coef_
-NRx_rsq = NRx.score(X1[:, :], Y1[:, 0, None])
+NRx_rsq = NRx.score(X1, Y1[:, 0, None])
 
 NRy_i = NRy.intercept_
 NRy_c = NRy.coef_
-NRy_rsq = NRy.score(X1[:, :], Y1[:, 1, None])
+NRy_rsq = NRy.score(X1, Y1[:, 1, None])
 
 NRz_i = NRz.intercept_
 NRz_c = NRz.coef_
-NRz_rsq = NRz.score(X1[:, :], Y1[:, 2, None])
+NRz_rsq = NRz.score(X1, Y1[:, 2, None])
 
 #---------NON-RECURSIVE (PREDICT)----------------------
 
@@ -297,34 +285,38 @@ YNRx =NRx.predict(X2)
 YNRy =NRy.predict(X2)
 YNRz =NRz.predict(X2)
 
-NRx_msq = mean_squared_error(Y1[:, 0, None], YNRx)
-NRy_msq = mean_squared_error(Y1[:, 1, None], YNRy)
-NRz_msq = mean_squared_error(Y1[:, 2, None], YNRz)
+NRx_rsq2=NRx.score(Y2, YNRx)
+NRy_rsq2=NRy.score(Y2, YNRy)
+NRz_rsq2=NRz.score(Y2, YNRz)
+
+NRx_msq = mean_squared_error(Y2[:, 0], YNRx)
+NRy_msq = mean_squared_error(Y2[:, 1], YNRy)
+NRz_msq = mean_squared_error(Y2[:, 2], YNRz)
 
 
 #---------RECURSIVE  (MODEL)--------------------
 
-Rx= LinearRegression().fit(X1[:, :], Y1[:, 0, None])
-Ry= LinearRegression().fit(X1[:, :], Y1[:, 1, None])
-Rz= LinearRegression().fit(X1[:, :], Y1[:, 2, None])
+Rx= LinearRegression().fit(X1, Y1[:, 0])
+Ry= LinearRegression().fit(X1, Y1[:, 1])
+Rz= LinearRegression().fit(X1, Y1[:, 2])
 
 Rx_i = Rx.intercept_
 Rx_c = Rx.coef_
-Rx_rsq = Rx.score(X1[:, :], Y1[:, 0, None])
+
 
 Ry_i = Ry.intercept_
 Ry_c = Ry.coef_
-Ry_rsq = Ry.score(X1[:, :], Y1[:, 1, None])
+
 
 Rz_i = Rz.intercept_
 Rz_c = Rz.coef_
-Rz_rsq = Rz.score(X1[:, :], Y1[:, 2, None])
 
 YR = R_predict_multi(X2,t_steps)
 
-Rx_msq = mean_squared_error(Y1[:, 0, None], YR[:, 0,None])
-Ry_msq = mean_squared_error(Y1[:, 1,None], YR[:, 1,None])
-Rz_msq = mean_squared_error(Y1[:, 2,None], YR[:, 2,None])
+
+Rx_msq = mean_squared_error(Y2[:,0], YR[:,0])
+Ry_msq = mean_squared_error(Y2[:, 1], YR[:, 1])
+Rz_msq = mean_squared_error(Y2[:, 2], YR[:, 2])
 
 #-----------------PLOT1----------------------
 
