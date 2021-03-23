@@ -44,13 +44,7 @@ def ideal(pt, t_steps):
     
     return X, Y
 
-def ideal2(pt, t_steps):
-    
-    print(pt)
-    X = pt[:-t_steps]
-    Y = pt[t_steps:]
-    
-    return X, Y
+
 
 def ideal3 (pt,t_steps):
     XT = pt[:-t_steps-2]
@@ -60,6 +54,96 @@ def ideal3 (pt,t_steps):
     
     return XT,XT1,XT2,Y
 
+def plot_predicted_ts(X2,Y2, Yp, index):
+    
+    fig, axs = plt.subplots(3, 2, sharex=False, sharey=False, figsize=(15, 5))
+    fig.suptitle(' Linear Regression; dt=0.01')
+    
+    axs[0,0].scatter(Yp, Y2[:, index],s=2)
+    axs[0,0].plot(Y2[:, index],Y2[:, index],'r')
+    axs[0,0].set_xlim([-50,50])
+    axs[0,0].set_ylim([-50,50])
+    axs[0,0].set_xlabel("y_pred")
+    axs[0,0].set_ylabel("y_ideal")
+    axs[0,0].set_title("Non-recursive LN")
+    
+           
+    axs[1,0].scatter(X2[:, index], Y2[:, index], s=2)
+    axs[1,0].scatter(X2[:, index], Yp, s=2)
+    
+    axs[1,0].set_xlim([-50,50])
+    axs[1,0].set_ylim([-50,50])
+    axs[1,0].set_xlabel("X(x,y,z)")
+    axs[1,0].set_ylabel("Y")
+    axs[1,0].set_title("X and Y")
+    
+    axs[1,1].plot(X2[:, index])
+    axs[1,1].plot(Y2[:, index])
+    axs[1,1].plot(Yp)
+    
+    axs[1,1].set_ylim([-60,60])
+    axs[1,1].set_xlabel("Time series")
+    
+    
+    
+    axs[2,0].plot(Yp-Y2[:, index], 'b')
+    
+    axs[2,0].set_ylim([-50,50])
+    axs[2,0].set_ylabel("error")
+    axs[2,0].set_xlabel("time_steps")
+    axs[2,0].set_title("Errors for LN")
+    
+    
+    
+    axs[2,1].plot(Yp-Y2[:, index], 'b')
+    
+    axs[2,1].set_ylim([-50,150])
+    axs[2,1].set_ylabel("squared error")
+    axs[2,1].set_xlabel("time_steps")
+    axs[2,1].set_title("Squared Errors for LN")
+    
+    plt.show()
+    #plt.scatter(y_pred1, y_pred2)
+
+
+def plot_traj(X2,Y2,YPx,YPy,YPz):
+    
+    fig1 = plt.figure(figsize=(15,10))
+    ax1 = fig1.add_subplot(131, projection='3d')
+    #ax1.scatter(y_pred10, y_pred11, y_pred12,color='g', alpha=1)
+    ax1.scatter(X2.T[0], X2.T[1], X2.T[2],color='r', alpha=.01)
+    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b', alpha=.009)
+    
+    ax1.set_xlabel('X[0] ')
+    ax1.set_ylabel('X[1] ')
+    ax1.set_zlabel('X[2] ')
+    
+    
+    
+    fig1 = plt.figure(figsize=(15,10))
+    ax1 = fig1.add_subplot(132, projection='3d')
+    
+    
+    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b',alpha=0.009)
+    ax1.set_xlabel('Y2[0]')
+    ax1.set_ylabel('Y2[1]')
+    ax1.set_zlabel('Y2[2]')
+    
+    
+    
+    #fig2 = plt.figure()
+    #ax2 = fig2.add_subplot(111, projection='3d')
+    fig1 = plt.figure(figsize=(15,10))
+    ax1 = fig1.add_subplot(133, projection='3d')
+    ax1.scatter(YPx, YPy, YPz, color='g',alpha=0.05)
+    ax1.scatter(Y2.T[0], Y2.T[1], Y2.T[2],color='b',alpha=0.009)
+    ax1.set_xlabel('y_pred1[0]; non recursive')
+    ax1.set_ylabel('y_pred1[1]')
+    ax1.set_zlabel('y_pred1[2]')
+    plt.show()
+    
+    
+    
 import pandas as pd 
 from sklearn import linear_model
 import statsmodels.api as sm
@@ -67,7 +151,7 @@ import statsmodels.api as sm
 r=28
 R=1
 tlength = 10000
-t_steps = 5
+t_steps = 50
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 
@@ -91,36 +175,71 @@ data = {'XTx':XT[:,0],
 # Create DataFrame 
 df = pd.DataFrame(data) 
 
-<<<<<<< HEAD
+
 
 # prediction with sklearn
-x=df[['XT1x','XT2x']] #Univariate
-x=df[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']] # Multivariate
-=======
+xx=df[['XT1x','XT2x']] #Univariate
+xy=df[['XT1y','XT2y']]
+xz=df[['XT1z','XT2z']]
+#x=df[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']] # Multivariate
+
 # prediction with sklearn
 
-x=df[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']]
->>>>>>> 19be43470169858c034b9cd0ef4b2f5e052b59d7
-y=df['YTx']
-regr = linear_model.LinearRegression()
-regr.fit(x, y)
+#x=df[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']]
 
-print('Intercept: \n', regr.intercept_)
-print('Coefficients: \n', regr.coef_)
+yx=df['YTx']
+yy=df['YTy']
+yz=df['YTz']
+regr_x = linear_model.LinearRegression()
+regr_x.fit(xx, yx)
+
+print('Intercept: \n', regr_x.intercept_)
+print('Coefficients: \n', regr_x.coef_)
 
 # with statsmodels
-x = sm.add_constant(x) # adding a constant
+xx = sm.add_constant(xx) # adding a constant
  
-model = sm.OLS(y, x).fit()
-predictions = model.predict(x) 
+modelx = sm.OLS(yx, xx).fit()
+predictions_x = modelx.predict(xx) 
  
-print_model = model.summary()
-print(print_model)
+print_modelx = modelx.summary()
+print(print_modelx)
+#--------------------------------------
+regr_y = linear_model.LinearRegression()
+regr_y.fit(xy, yy)
+
+print('Intercept: \n', regr_y.intercept_)
+print('Coefficients: \n', regr_y.coef_)
+
+# with statsmodels
+xy = sm.add_constant(xy) # adding a constant
+ 
+modely = sm.OLS(yy, xy).fit()
+predictions_y = modely.predict(xy) 
+ 
+print_modely = modely.summary()
+print(print_modely)
+
+#--------------------------------------
+regr_z = linear_model.LinearRegression()
+regr_z.fit(xz, yz)
+
+print('Intercept: \n', regr_z.intercept_)
+print('Coefficients: \n', regr_z.coef_)
+
+# with statsmodels
+xz = sm.add_constant(xz) # adding a constant
+ 
+modelz = sm.OLS(yz, xz).fit()
+predictions_z = modelz.predict(xz) 
+ 
+print_modelz = modelz.summary()
+print(print_modelz)
   
-<<<<<<< HEAD
+
 #plt.plot(predictions)
 #plt.plot(df.YTx,'r')
-plt.plot(df.YTx-predictions,'k')
+#plt.plot(df.YTx-predictions,'k')
 
 #DATA_x = ([1, 2],
 #          [2, 3],
@@ -144,9 +263,12 @@ plt.plot(df.YTx-predictions,'k')
 #    ax.set_zlim(zlim)
 
 
+#model.(sm.OLS(Y.T,df1[['XT1.T','XT2.T']]).fit()
 
-=======
-plt.plot(predictions)
-plt.plot(df.YTx,'r')
-plt.plot(df.YTx-predictions,'k')
->>>>>>> 19be43470169858c034b9cd0ef4b2f5e052b59d7
+#plt.plot(predictions)
+#plt.plot(df.YTx,'r')
+#plt.plot(df.YTx-predictions,'k')
+plot_predicted_ts(X2,Y2,predictions_x,0)
+plot_predicted_ts(X2,Y2,predictions_y,1)
+plot_predicted_ts(X2,Y2,predictions_z,2)
+#plot_traj(X2,Y2,predictions_x,predictions_y,predictions_z)
