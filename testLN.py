@@ -30,7 +30,13 @@ from module import ideal
 #from module import m_non_recursive_LN
 #from module import m_recursive_LN
 
-
+def ideal2(pt, t_steps):
+    
+    print(pt)
+    X = pt[:-t_steps-2]
+    Y = pt[1:-t_steps-1]+pt[2:-t_steps]
+    
+    return X, Y
 
 def r_predict_uni(Xt,modelx,modely,modelz,t_steps):
 
@@ -66,16 +72,16 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     
     axs[0,0].scatter(Yp, Y2[:, index],s=2)
     axs[0,0].plot(Y2[:, index],Y2[:, index],'r')
-    axs[0,0].set_xlim([-50,50])
-    axs[0,0].set_ylim([-50,50])
+    #axs[0,0].set_xlim([-50,50])
+    #axs[0,0].set_ylim([-50,50])
     axs[0,0].set_xlabel("y_pred")
     axs[0,0].set_ylabel("y_ideal")
     axs[0,0].set_title("Non-recursive LN")
     
     axs[0,1].scatter(Yrp[:, index], Y2[:, index], s=2)
     axs[0,1].plot(Y2[:, index], Y2[:, index], 'r')
-    axs[0,1].set_xlim([-50,50])
-    axs[0,1].set_ylim([-50,50])
+    #axs[0,1].set_xlim([-50,50])
+    #axs[0,1].set_ylim([-50,50])
     axs[0,1].set_xlabel("y_pred")
     axs[0,1].set_ylabel("y_ideal")
     axs[0,1].set_title("Recursive LN")
@@ -84,8 +90,8 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     axs[1,0].scatter(X2[:, index], Y2[:, index], s=2)
     axs[1,0].scatter(X2[:, index], Yp, s=2)
     axs[1,0].scatter(X2[:, index], Yrp[:, index], s=2) 
-    axs[1,0].set_xlim([-50,50])
-    axs[1,0].set_ylim([-50,50])
+    #axs[1,0].set_xlim([-50,50])
+    #axs[1,0].set_ylim([-50,50])
     axs[1,0].set_xlabel("X(x,y,z)")
     axs[1,0].set_ylabel("Y")
     axs[1,0].set_title("X and Y")
@@ -94,14 +100,14 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     axs[1,1].plot(Y2[:, index])
     axs[1,1].plot(Yp)
     axs[1,1].plot(Yrp[:, index])
-    axs[1,1].set_ylim([-60,60])
+    #axs[1,1].set_ylim([-60,60])
     axs[1,1].set_xlabel("Time series")
     
     
     
-    axs[2,0].plot(Yp-Y2[:, index], 'b')
+    axs[2,0].plot((Yp-Y2[:, index])*(Yp-Y2[:, index]), 'b')
     axs[2,0].plot(Yrp[:, index]-Y2[:, index], 'r')
-    axs[2,0].set_ylim([-50,50])
+    #axs[2,0].set_ylim([-50,50])
     axs[2,0].set_ylabel("error")
     axs[2,0].set_xlabel("time_steps")
     axs[2,0].set_title("Errors for LN")
@@ -110,7 +116,7 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     
     axs[2,1].plot(Yp-Y2[:, index], 'b')
     axs[2,1].plot((Yrp[:, index]-Y2[:, index])*(Yrp[:, index]-Y2[:, index]), 'r')
-    axs[2,1].set_ylim([-50,150])
+    #axs[2,1].set_ylim([-50,150])
     axs[2,1].set_ylabel("squared error")
     axs[2,1].set_xlabel("time_steps")
     axs[2,1].set_title("Squared Errors for LN")
@@ -205,7 +211,7 @@ tlength = 10000
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 
-t_steps = 5
+t_steps = 50
 
 index = 0
 
@@ -293,9 +299,9 @@ plot_traj(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
 
 """----------------MULTIVARIATE----------------"""
 
-X1, Y1 = ideal(pts,1)
-X2, Y2 = ideal(pts2,1)
-X3, Y3 = ideal(pts,t_steps)
+
+X2, Y2 = ideal(pts2,t_steps)
+
 #--------NON-RECURSIVE (MODEL)-------------
 
 NRx = LinearRegression().fit(X3, Y3[:, 0, None])
