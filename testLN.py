@@ -30,17 +30,7 @@ from module import ideal
 #from module import m_non_recursive_LN
 #from module import m_recursive_LN
 
-<<<<<<< HEAD
-=======
 
->>>>>>> e0dd16a0d27392c197562cac36c8bd2d97437c86
-def ideal2(pt, t_steps):
-    
-    print(pt)
-    X = pt[:-t_steps-2]
-    Y = pt[1:-t_steps-1]+pt[2:-t_steps]
-    
-    return X, Y
 
 def r_predict_uni(Xt,modelx,modely,modelz,t_steps):
 
@@ -272,11 +262,9 @@ tlength = 10000
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 
-<<<<<<< HEAD
+
 t_steps = 50
-=======
-t_steps = 1
->>>>>>> e0dd16a0d27392c197562cac36c8bd2d97437c86
+
 
 index = 0
 
@@ -365,7 +353,7 @@ plot_traj(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
 """----------------MULTIVARIATE----------------"""
 
 
-X2, Y2 = ideal(pts2,t_steps)
+
 
 #--------NON-RECURSIVE (MODEL)-------------
 
