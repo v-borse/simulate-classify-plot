@@ -62,16 +62,16 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     fig, axs = plt.subplots(4, 2, sharex=False, sharey=False, figsize=(15, 15))
     fig.suptitle(' Linear Regression; dt=0.01')
     
-    axs[0,0].scatter(Yp, Y2[:, index],s=2)
-    axs[0,0].plot(Y2[:, index],Y2[:, index],'r')
+    axs[0,0].scatter(Yp, Y2[:, index],c='k',s=2)
+    axs[0,0].plot(Y2[:, index],Y2[:, index],'g')
     #axs[0,0].set_xlim([-50,50])
     #axs[0,0].set_ylim([-50,50])
     axs[0,0].set_xlabel("y_pred")
     axs[0,0].set_ylabel("y_ideal")
     axs[0,0].set_title("Non-recursive LN")
     
-    axs[0,1].scatter(Yrp[:, index], Y2[:, index], s=2)
-    axs[0,1].plot(Y2[:, index], Y2[:, index], 'r')
+    axs[0,1].scatter(Yrp[:, index], Y2[:, index],c='k', s=2)
+    axs[0,1].plot(Y2[:, index], Y2[:, index], 'g')
     #axs[0,1].set_xlim([-50,50])
     #axs[0,1].set_ylim([-50,50])
     axs[0,1].set_xlabel("y_pred")
@@ -79,9 +79,9 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     axs[0,1].set_title("Recursive LN")
     
        
-    axs[1,0].scatter(X2[:, index], Y2[:, index], s=2)
-    axs[1,0].scatter(X2[:, index], Yp, s=2)
-    axs[1,0].scatter(X2[:, index], Yrp[:, index], s=2) 
+    axs[1,0].scatter(X2[:, index], Y2[:, index],c='k', s=2)
+    axs[1,0].scatter(X2[:, index], Yp,c='b', s=2)
+    axs[1,0].scatter(X2[:, index], Yrp[:, index],c='r', s=2) 
     #axs[1,0].set_xlim([-50,50])
     #axs[1,0].set_ylim([-50,50])
     axs[1,0].set_xlabel("X(x,y,z)")
@@ -366,8 +366,8 @@ plot_predicted_ts(X2,Y2,Ynry,Yr,1)
 plot_predicted_ts(X2,Y2,Ynrz,Yr,2)
 
 
-###-------Plot2--------------------------------
-#plot_traj(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
+##-------Plot2--------------------------------
+plot_traj(X2,Y2,Ynrx,Ynry,Ynrz,Yr)
 
 
 
@@ -438,13 +438,13 @@ Rz_msq = mean_squared_error(Y2[:, 2], YR[:, 2])
 #-----------------PLOT1----------------------
 
 
-#plot_predicted_ts(X2,Y2,YNRx,YR,0)
-#plot_predicted_ts(X2,Y2,YNRy,YR,1)
-#plot_predicted_ts(X2,Y2,YNRz,YR,2)
-#
+plot_predicted_ts(X2,Y2,YNRx,YR,0)
+plot_predicted_ts(X2,Y2,YNRy,YR,1)
+plot_predicted_ts(X2,Y2,YNRz,YR,2)
+
 ####---------------PLOT2---------------------------
-###
-#plot_traj(X2,Y2,YNRx,YNRy,YNRz,YR)
+##
+plot_traj(X2,Y2,YNRx,YNRy,YNRz,YR)
 
 
 alpha1,beta1=mathematical_rec(rx_i,rx_c,t_steps)
