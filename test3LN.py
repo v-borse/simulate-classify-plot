@@ -46,7 +46,7 @@ def ideal3 (pt,t_steps):
     
     return XT,XT1,XT2,Y
 
-def plot_predicted_ts(X2,Y2, Yp, index):
+def plot_predicted_ts1(X2,Y2, Yp, index):
     
     fig, axs = plt.subplots(4, 2, sharex=False, sharey=False, figsize=(15, 5))
     fig.suptitle(' Linear Regression; dt=0.01')
@@ -92,7 +92,85 @@ def plot_predicted_ts(X2,Y2, Yp, index):
     
     
     plt.show()
-    #plt.scatter(y_pred1, y_pred2)
+
+def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
+    fig, axs = plt.subplots(4, 2, sharex=False, sharey=False, figsize=(15, 15))
+    fig.suptitle(' Linear Regression; dt=0.01')
+    
+    axs[0,0].scatter(Yp, Y2[:, index],c='k',s=2)
+    axs[0,0].plot(Y2[:, index],Y2[:, index],'g')
+    #axs[0,0].set_xlim([-50,50])
+    #axs[0,0].set_ylim([-50,50])
+    axs[0,0].set_xlabel("y_pred")
+    axs[0,0].set_ylabel("y_ideal")
+    axs[0,0].set_title("Non-recursive LN")
+    
+    axs[0,1].scatter(Yrp[:, index], Y2[:, index],c='k', s=2)
+    axs[0,1].plot(Y2[:, index], Y2[:, index], 'g')
+    #axs[0,1].set_xlim([-50,50])
+    #axs[0,1].set_ylim([-50,50])
+    axs[0,1].set_xlabel("y_pred")
+    axs[0,1].set_ylabel("y_ideal")
+    axs[0,1].set_title("Recursive LN")
+    
+       
+    axs[1,0].scatter(X2[:, index], Y2[:, index],c='k', s=2)
+    axs[1,0].scatter(X2[:, index], Yp,c='b', s=2)
+    axs[1,0].scatter(X2[:, index], Yrp[:, index],c='r', s=2) 
+    #axs[1,0].set_xlim([-50,50])
+    #axs[1,0].set_ylim([-50,50])
+    axs[1,0].set_xlabel("X(x,y,z)")
+    axs[1,0].set_ylabel("Y")
+    axs[1,0].set_title("X and Y")
+    
+    axs[1,1].plot((Yp-Y2[:, index]), 'b')
+    axs[1,1].plot(Yrp[:, index]-Y2[:, index], 'r')
+    #axs[2,0].set_ylim([-50,50])
+    axs[1,1].set_ylabel("error")
+    axs[1,1].set_xlabel("time_steps")
+    axs[1,1].set_title("Errors for LN")
+    
+    
+    axs[2,0].plot(X2[:5000, index],'g^',Y2[:5000, index],'y.')
+    #axs[1,1].plot(Y2[:, index])
+    #axs[1,1].plot(Yp)
+    #axs[1,1].plot(Yrp[:, index])
+    #axs[1,1].set_ylim([-60,60])
+    axs[2,0].set_xlabel("X and Y_ideal Time series")
+    
+    axs[2,1].plot(X2[5000:, index],'g^',Y2[5000:, index],'y.')
+    #axs[1,1].plot(Y2[:, index])
+    #axs[1,1].plot(Yp)
+    #axs[1,1].plot(Yrp[:, index])
+    #axs[1,1].set_ylim([-60,60])
+    axs[2,1].set_xlabel("X and Y_ideal Time series")
+    
+    
+    axs[3,0].plot(Yp[:5000],'b^',Yrp[:5000, index],'r.')
+    #axs[1,1].plot(Y2[:, index])
+    #axs[1,1].plot(Yp)
+    #axs[1,1].plot(Yrp[:, index])
+    #axs[1,1].set_ylim([-60,60])
+    axs[3,0].set_xlabel("predicted Time series")
+    
+    axs[3,1].plot(Yp[5000:],'b^',Yrp[5000:, index],'r.')
+    #axs[1,1].plot(Y2[:, index])
+    #axs[1,1].plot(Yp)
+    #axs[1,1].plot(Yrp[:, index])
+    #axs[1,1].set_ylim([-60,60])
+    axs[3,1].set_xlabel("predicted Time series")
+    
+    
+    
+    
+#    axs[2,1].plot(Yp-Y2[:, index], 'b')
+#    axs[2,1].plot((Yrp[:, index]-Y2[:, index])*(Yrp[:, index]-Y2[:, index]), 'r')
+#    #axs[2,1].set_ylim([-50,150])
+#    axs[2,1].set_ylabel("squared error")
+#    axs[2,1].set_xlabel("time_steps")
+#    axs[2,1].set_title("Squared Errors for LN")
+    
+    plt.show()
 
 def dataframe(XT,XT1,XT2, Y):
     
@@ -140,33 +218,31 @@ def r_predict_uni(Xt,modelx,modely,modelz,t_steps):
 def r_predict_uni2(pts2,modelx,modely,modelz,t_steps):
     
     tXT,tXT1,tXT2, tY= ideal3(pts2,1)
-    data3= t_dataframe(tXT,tXT1,tXT2, tY)
+    data4= t_dataframe(tXT,tXT1,tXT2, tY)
     # Create DataFrame 
-    df3 = pd.DataFrame(data3) 
+    df4 = pd.DataFrame(data4) 
     
     
     for i in range(t_steps):
-        tx=df3[['tXT1x','tXT2x','tXT1y','tXT2y','tXT1z','tXT2z']] # Multivariate
-        print(tx)
-        tyx=df3['tYTx']
-        tyy=df3['tYTy']
-        tyz=df3['tYTz']
-        print(np.shape(df3.tXT2x[:,None]))
+        tx=df4[['tXT1x','tXT2x']]
+        ty=df4[['tXT1y','tXT2y']]
+        tz=df4[['tXT1z','tXT2z']]
          
         Yrx=modelx.predict(tx)
-        print(Yrx[:,None])
-        Yry=modely.predict(tx)
-        Yrz=modelz.predict(tx)
-         
-        df3.tXT2x = df3.tXT1x
-        df3.tXT2y = df3.tXT1y
-        df3.tXT2z = df3.tXT1z
-        df3.tXT1x = Yrx
-        df3.tXT1y = Yry
-        df3.tXT1z = Yrz
-    
+        #print(np.shape(Yrx))
+        Yry=modely.predict(ty)
+        Yrz=modelz.predict(tz)
+
+        
+        df4['tXT2x'] = df4['tXT1x']
+        df4['tXT2y'] = df4['tXT1y']
+        df4['tXT2z'] = df4['tXT1z']
+        df4.tXT1x = Yrx
+        df4.tXT1y = Yry
+        df4.tXT1z = Yrz
+        
     Xnew = np.array([Yrx,Yry,Yrz])
-    return Xnew
+    return Xnew.T
         
             
             
@@ -186,7 +262,7 @@ X3, Y3 = ideal(pts2,1)
   
 
 #----------UNIVARIATE-------------------------------------
-"""
+
 #---------Non- Recursive---------------------------------------
 
 XT,XT1,XT2, Y = ideal3(pts,t_steps)
@@ -248,10 +324,11 @@ predictions_z = modelz.predict(xz)
 print_modelz = modelz.summary()
 print(print_modelz)
 
-plot_predicted_ts(X2,Y2,predictions_x,0)
-plot_predicted_ts(X2,Y2,predictions_y,1)
-plot_predicted_ts(X2,Y2,predictions_z,2)
-"""
+#plot_predicted_ts(X2,Y2,predictions_x,0)
+#plot_predicted_ts(X2,Y2,predictions_y,1)
+#plot_predicted_ts(X2,Y2,predictions_z,2)
+
+
 #==========Recursive====================================
 
 XT,XT1,XT2, Y = ideal3(pts,1)
@@ -279,9 +356,13 @@ rz.fit(xz, yz)
 #-------preddiction-------------------
 
 Yr = r_predict_uni2(pts2,rx,ry,rz,t_steps)
+plot_predicted_ts(X2,Y2,predictions_x,Yr[:len(predictions_x[:,None])],0)
+plot_predicted_ts(X2,Y2,predictions_y,Yr[:len(predictions_y[:,None])],1)
+plot_predicted_ts(X2,Y2,predictions_z,Yr[:len(predictions_z[:,None])],2)
+
+
 
 """
-
 #----------MULTIVARIATE-------------------------------------
 
 #---------Non- Recursive---------------------------------------
