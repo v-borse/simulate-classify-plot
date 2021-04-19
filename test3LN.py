@@ -24,6 +24,11 @@ import matplotlib.pyplot as plt
 import pandas as pd 
 from sklearn import linear_model
 import statsmodels.api as sm
+from matplotlib import cm
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
 
 from module import lorenz
 from module import single_traj
@@ -214,17 +219,38 @@ def r_predict_uni2(pts2,modelx,modely,modelz,t_steps):
     # Create DataFrame 
     df4 = pd.DataFrame(data4) 
     
-    
+    NUM_COLORS = 50
+    #LINE_STYLES = ['solid','dotted']
+    LINE_STYLES = ['solid', 'dashed', 'dashdot', 'dotted']
+    NUM_STYLES = len(LINE_STYLES)
+
+    sns.reset_orig()  # get default matplotlib styles back
+    clrs = sns.color_palette('husl', n_colors=NUM_COLORS)  # a list of RGB tuples
+    fig, ax = plt.subplots(1)
     for i in range(t_steps):
         tx=df4[['tXT1x','tXT2x']]
         ty=df4[['tXT1y','tXT2y']]
         tz=df4[['tXT1z','tXT2z']]
          
         Yrx=modelx.predict(tx)
-        #plt.plot(Yrx,label=i)
-        #plt.legend()
         Yry=modely.predict(ty)
         Yrz=modelz.predict(tz)
+        
+        lines = ax.plot(Yrz[5000:],label=i)
+        lines[0].set_color(clrs[i])
+        lines[0].set_linestyle(LINE_STYLES[i%NUM_STYLES])
+        ax.legend(title='t_steps',bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.set_xlabel('timesteps')
+        ax.set_ylabel('Y')
+        ax.set_title("Recursive/Univariate LN")
+        #ax.legend(lines[:i],[i],bbox_to_anchor=(1.05, 1), loc='upper left',frameon='False')
+#        plt.plot(Yrx,label=i,colormap=cm.cubelix);
+#        plt.legend(frameon='False')
+#        lines=plt.plot(Yrx,label=i)
+#        plt.legend(lines[:t_steps],['0','1','2','3','4']);
+        
+        
+        
 
         
         df4['tXT2x'] = df4['tXT1x']
@@ -234,6 +260,7 @@ def r_predict_uni2(pts2,modelx,modely,modelz,t_steps):
         df4.tXT1y = Yry
         df4.tXT1z = Yrz
         #print(df4)
+    #ax.legend(lines[:],[i],bbox_to_anchor=(1.05, 1), loc='upper left',frameon='False')
     Xnew = np.array([Yrx,Yry,Yrz])
     return Xnew.T
         
@@ -244,7 +271,14 @@ def R_predict_multi2(pts2,modelx,modely,modelz,t_steps):
     data5= t_dataframe(tXT,tXT1,tXT2, tY)
     # Create DataFrame 
     df5 = pd.DataFrame(data5) 
-    
+    NUM_COLORS = 50
+    #LINE_STYLES = ['solid','dotted']
+    LINE_STYLES = ['solid', 'dashed', 'dashdot', 'dotted']
+    NUM_STYLES = len(LINE_STYLES)
+
+    sns.reset_orig()  # get default matplotlib styles back
+    clrs = sns.color_palette('husl', n_colors=NUM_COLORS)  # a list of RGB tuples
+    fig, ax = plt.subplots(1)
     
     for i in range(t_steps):
         tx=df5[['tXT1x','tXT2x','tXT1y','tXT2y','tXT1z','tXT2z']] # Multivariate
@@ -252,6 +286,14 @@ def R_predict_multi2(pts2,modelx,modely,modelz,t_steps):
         Yrx=modelx.predict(tx)
         Yry=modely.predict(tx)
         Yrz=modelz.predict(tx)
+        
+        lines = ax.plot(Yrz[5000:],label=i)
+        lines[0].set_color(clrs[i])
+        lines[0].set_linestyle(LINE_STYLES[i%NUM_STYLES])
+        ax.legend(title='t_steps',bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.set_xlabel('timesteps')
+        ax.set_ylabel('Y')
+        ax.set_title("Recursive/Multivariate LN")
         
         df5['tXT2x'] = df5['tXT1x']
         df5['tXT2y'] = df5['tXT1y']
