@@ -153,23 +153,15 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     #axs[1,1].set_ylim([-60,60])
     axs[3,0].set_xlabel("predicted Time series")
     
-    axs[3,1].plot(Yp[5000:],'b^',Yrp[5000:, index],'r.')
+    axs[3,1].plot(Yp[5000:],'b^')
+    axs[3,1].plot(Yr[5000:,index],'r.')
+    #axs[3,1].plot(Yp[5000:],'b^',Yrp[5000:, index],'r.')
     #axs[1,1].plot(Y2[:, index])
     #axs[1,1].plot(Yp)
     #axs[1,1].plot(Yrp[:, index])
     #axs[1,1].set_ylim([-60,60])
     axs[3,1].set_xlabel("predicted Time series")
-    
-    
-    
-    
-#    axs[2,1].plot(Yp-Y2[:, index], 'b')
-#    axs[2,1].plot((Yrp[:, index]-Y2[:, index])*(Yrp[:, index]-Y2[:, index]), 'r')
-#    #axs[2,1].set_ylim([-50,150])
-#    axs[2,1].set_ylabel("squared error")
-#    axs[2,1].set_xlabel("time_steps")
-#    axs[2,1].set_title("Squared Errors for LN")
-    
+       
     plt.show()
 
 def dataframe(XT,XT1,XT2, Y):
@@ -229,7 +221,8 @@ def r_predict_uni2(pts2,modelx,modely,modelz,t_steps):
         tz=df4[['tXT1z','tXT2z']]
          
         Yrx=modelx.predict(tx)
-        #print(np.shape(Yrx))
+        #plt.plot(Yrx,label=i)
+        #plt.legend()
         Yry=modely.predict(ty)
         Yrz=modelz.predict(tz)
 
@@ -240,14 +233,36 @@ def r_predict_uni2(pts2,modelx,modely,modelz,t_steps):
         df4.tXT1x = Yrx
         df4.tXT1y = Yry
         df4.tXT1z = Yrz
-        
+        #print(df4)
     Xnew = np.array([Yrx,Yry,Yrz])
     return Xnew.T
         
             
-            
-            
+def R_predict_multi2(pts2,modelx,modely,modelz,t_steps):
     
+    tXT,tXT1,tXT2, tY= ideal3(pts2,1)
+    data5= t_dataframe(tXT,tXT1,tXT2, tY)
+    # Create DataFrame 
+    df5 = pd.DataFrame(data5) 
+    
+    
+    for i in range(t_steps):
+        tx=df5[['tXT1x','tXT2x','tXT1y','tXT2y','tXT1z','tXT2z']] # Multivariate
+
+        Yrx=modelx.predict(tx)
+        Yry=modely.predict(tx)
+        Yrz=modelz.predict(tx)
+        
+        df5['tXT2x'] = df5['tXT1x']
+        df5['tXT2y'] = df5['tXT1y']
+        df5['tXT2z'] = df5['tXT1z']
+        df5.tXT1x = Yrx
+        df5.tXT1y = Yry
+        df5.tXT1z = Yrz
+    Xnew = np.array([Yrx,Yry,Yrz])
+    return Xnew.T
+
+
 r=28
 R=1
 tlength = 10000
@@ -362,7 +377,7 @@ plot_predicted_ts(X2,Y2,predictions_z,Yr[:len(predictions_z[:,None])],2)
 
 
 
-"""
+
 #----------MULTIVARIATE-------------------------------------
 
 #---------Non- Recursive---------------------------------------
@@ -405,7 +420,32 @@ Ynrx=modelx.predict(tx)
 Ynry=modely.predict(tx)
 Ynrz=modelz.predict(tx)
 
-plot_predicted_ts(X2,Y2,Ynrx,0)
-plot_predicted_ts(X2,Y2,Ynry,1)
-plot_predicted_ts(X2,Y2,Ynrz,2)
-"""
+#plot_predicted_ts(X2,Y2,Ynrx,0)
+#plot_predicted_ts(X2,Y2,Ynry,1)
+#plot_predicted_ts(X2,Y2,Ynrz,2)
+
+#-------------------------Recursive-----------------------------
+XT,XT1,XT2, Y = ideal3(pts,1)
+data3= dataframe(XT,XT1,XT2, Y)
+# Create DataFrame 
+df3 = pd.DataFrame(data3) 
+
+x=df3[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']] # Multivariate
+
+yx=df3['YTx']
+yy=df3['YTy']
+yz=df3['YTz']
+
+Rx=linear_model.LinearRegression()
+Rx.fit(x,yx)
+
+Ry=linear_model.LinearRegression()
+Ry.fit(x,yy)
+
+Rz=linear_model.LinearRegression()
+Rz.fit(x,yz)
+
+YR = R_predict_multi2(pts2,Rx,Ry,Rz,t_steps)
+plot_predicted_ts(X2,Y2,Ynrx,YR[:len(Ynrx[:,None])],0)
+plot_predicted_ts(X2,Y2,Ynry,YR[:len(Ynry[:,None])],1)
+plot_predicted_ts(X2,Y2,Ynrz,YR[:len(Ynrz[:,None])],2)
