@@ -41,9 +41,24 @@ def ideal(pt, t_steps):
     
     return X, Y
 
+def ideal4(pt, t_steps):
+    # for polynomial covariates; it replaces ideal()
+    print(pt)
+    X = pt[:-t_steps]
+    Y = pt[t_steps:]
+    
+    return X, Y
 
+def ideal5 (pt,t_steps):
+    #for polynomial covariates; it replaces ideal()
+    XT = pt[:-t_steps]
+    XT1= pt[:-t_steps]
+    XT2= np.multiply(pt[:-t_steps],pt[:-t_steps])
+    Y  = XT1+XT2
+    
+    return XT,XT1,XT2,Y
 
-def ideal3 (pt,t_steps):
+def ideal3(pt,t_steps):
     XT = pt[:-t_steps-2]
     XT1= pt[1:-t_steps-1]
     XT2= pt[2:-t_steps]
@@ -236,7 +251,7 @@ def r_predict_uni2(pts2,modelx,modely,modelz,t_steps):
         Yry=modely.predict(ty)
         Yrz=modelz.predict(tz)
         
-        lines = ax.plot(Yrz[5000:],label=i)
+        lines = ax.plot(Yrx[:5000],label=i)
         lines[0].set_color(clrs[i])
         lines[0].set_linestyle(LINE_STYLES[i%NUM_STYLES])
         ax.legend(title='t_steps',bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -287,7 +302,7 @@ def R_predict_multi2(pts2,modelx,modely,modelz,t_steps):
         Yry=modely.predict(tx)
         Yrz=modelz.predict(tx)
         
-        lines = ax.plot(Yrz[5000:],label=i)
+        lines = ax.plot(Yrx[:5000],label=i)
         lines[0].set_color(clrs[i])
         lines[0].set_linestyle(LINE_STYLES[i%NUM_STYLES])
         ax.legend(title='t_steps',bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -316,7 +331,7 @@ X1, Y1 = ideal(pts,1)
 X2, Y2 = ideal(pts2,t_steps)
 X3, Y3 = ideal(pts2,1)
 
-  
+
 
 #----------UNIVARIATE-------------------------------------
 
