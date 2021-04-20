@@ -33,28 +33,22 @@ import numpy as np
 from module import lorenz
 from module import single_traj
 
-def ideal(pt, t_steps):
-    
-    print(pt)
-    X = pt[:-t_steps-2]
-    Y = pt[1:-t_steps-1]+pt[2:-t_steps]
-    
-    return X, Y
 
-def ideal4(pt, t_steps):
+
+def ideal(pt, t_steps):
     # for polynomial covariates; it replaces ideal()
     print(pt)
-    X = pt[:-t_steps]
-    Y = pt[t_steps:]
+    X = pt[:-t_steps-2]
+    Y = pt[t_steps+2:]
     
     return X, Y
 
 def ideal5 (pt,t_steps):
-    #for polynomial covariates; it replaces ideal()
+    #for polynomial covariates; it replaces ideal3()
     XT = pt[:-t_steps]
     XT1= pt[:-t_steps]
     XT2= np.multiply(pt[:-t_steps],pt[:-t_steps])
-    Y  = XT1+XT2
+    Y  = pt[t_steps:]
     
     return XT,XT1,XT2,Y
 
@@ -62,7 +56,7 @@ def ideal3(pt,t_steps):
     XT = pt[:-t_steps-2]
     XT1= pt[1:-t_steps-1]
     XT2= pt[2:-t_steps]
-    Y  = pt[1:-t_steps-1]+pt[2:-t_steps]
+    Y  = pt[t_steps+2:]
     
     return XT,XT1,XT2,Y
 
@@ -323,7 +317,7 @@ def R_predict_multi2(pts2,modelx,modely,modelz,t_steps):
 r=28
 R=1
 tlength = 10000
-t_steps = 50
+t_steps = 1
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 
@@ -440,13 +434,15 @@ plot_predicted_ts(X2,Y2,predictions_z,Yr[:len(predictions_z[:,None])],2)
 #---------Non- Recursive---------------------------------------
 
 XT,XT1,XT2, Y = ideal3(pts,t_steps)
-data= dataframe(XT,XT1,XT2, Y)
+data1= dataframe(XT,XT1,XT2, Y)
 
-x=df[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']] # Multivariate
+# Create DataFrame 
+df1 = pd.DataFrame(data1) 
+x=df1[['XT1x','XT2x','XT1y','XT2y','XT1z','XT2z']] # Multivariate
 
-yx=df['YTx']
-yy=df['YTy']
-yz=df['YTz']
+yx=df1['YTx']
+yy=df1['YTy']
+yz=df1['YTz']
 
 modelx=linear_model.LinearRegression()
 modelx.fit(x,yx)
