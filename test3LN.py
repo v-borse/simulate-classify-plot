@@ -53,9 +53,9 @@ def ideal5 (pt,t_steps):
     return XT,XT1,XT2,Y
 
 def ideal3(pt,t_steps):
-    XT = pt[:-t_steps-2]
+    XT2 = pt[:-t_steps-2]
     XT1= pt[1:-t_steps-1]
-    XT2= pt[2:-t_steps]
+    XT= pt[2:-t_steps]
     Y  = pt[t_steps+2:]
     
     return XT,XT1,XT2,Y
@@ -350,45 +350,30 @@ regr_x.fit(xx, yx)
 print('Intercept: \n', regr_x.intercept_)
 print('Coefficients: \n', regr_x.coef_)
 
-# with statsmodels
-xx = sm.add_constant(xx) # adding a constant
- 
-modelx = sm.OLS(yx, xx).fit()
-predictions_x = modelx.predict(xx) 
- 
-print_modelx = modelx.summary()
-print(print_modelx)
-#--------------------------------------
 regr_y = linear_model.LinearRegression()
 regr_y.fit(xy, yy)
 
-print('Intercept: \n', regr_y.intercept_)
-print('Coefficients: \n', regr_y.coef_)
 
-# with statsmodels
-xy = sm.add_constant(xy) # adding a constant
- 
-modely = sm.OLS(yy, xy).fit()
-predictions_y = modely.predict(xy) 
- 
-print_modely = modely.summary()
-print(print_modely)
-
-#--------------------------------------
 regr_z = linear_model.LinearRegression()
 regr_z.fit(xz, yz)
 
-print('Intercept: \n', regr_z.intercept_)
-print('Coefficients: \n', regr_z.coef_)
+tXT,tXT1,tXT2, tY= ideal3(pts2,t_steps)
+data2= t_dataframe(tXT,tXT1,tXT2, tY)
 
-# with statsmodels
-xz = sm.add_constant(xz) # adding a constant
- 
-modelz = sm.OLS(yz, xz).fit()
-predictions_z = modelz.predict(xz) 
- 
-print_modelz = modelz.summary()
-print(print_modelz)
+  
+# Create DataFrame 
+df2 = pd.DataFrame(data2) 
+
+txx=df2[['tXT1x','tXT2x']] #Univariate
+txy=df2[['tXT1y','tXT2y']]
+txz=df2[['tXT1z','tXT2z']]
+tyx=df2['tYTx']
+tyy=df2['tYTy']
+tyz=df2['tYTz']
+
+Ynrx=regr_x.predict(txx)
+Ynry=regr_y.predict(txy)
+Ynrz=regr_z.predict(txz)
 
 #plot_predicted_ts(X2,Y2,predictions_x,0)
 #plot_predicted_ts(X2,Y2,predictions_y,1)
@@ -422,9 +407,9 @@ rz.fit(xz, yz)
 #-------preddiction-------------------
 
 Yr = r_predict_uni2(pts2,rx,ry,rz,t_steps)
-plot_predicted_ts(X2,Y2,predictions_x,Yr[:len(predictions_x[:,None])],0)
-plot_predicted_ts(X2,Y2,predictions_y,Yr[:len(predictions_y[:,None])],1)
-plot_predicted_ts(X2,Y2,predictions_z,Yr[:len(predictions_z[:,None])],2)
+plot_predicted_ts(X2,Y2,Ynrx,Yr[:len(Ynrx[:,None])],0)
+plot_predicted_ts(X2,Y2,Ynry,Yr[:len(Ynry[:,None])],1)
+plot_predicted_ts(X2,Y2,Ynrz,Yr[:len(Ynrz[:,None])],2)
 
 
 
@@ -462,16 +447,16 @@ data2= t_dataframe(tXT,tXT1,tXT2, tY)
 # Create DataFrame 
 df2 = pd.DataFrame(data2) 
 
-tx=df2[['tXT1x','tXT2x','tXT1y','tXT2y','tXT1z','tXT2z']] # Multivariate
+Tx=df2[['tXT1x','tXT2x','tXT1y','tXT2y','tXT1z','tXT2z']] # Multivariate
 
 
-tyx=df2['tYTx']
-tyy=df2['tYTy']
-tyz=df2['tYTz']
+Tyx=df2['tYTx']
+Tyy=df2['tYTy']
+Tyz=df2['tYTz']
 
-Ynrx=modelx.predict(tx)
-Ynry=modely.predict(tx)
-Ynrz=modelz.predict(tx)
+YNRx=modelx.predict(Tx)
+YNRy=modely.predict(Tx)
+YNRz=modelz.predict(Tx)
 
 #plot_predicted_ts(X2,Y2,Ynrx,0)
 #plot_predicted_ts(X2,Y2,Ynry,1)
@@ -499,6 +484,6 @@ Rz=linear_model.LinearRegression()
 Rz.fit(x,yz)
 
 YR = R_predict_multi2(pts2,Rx,Ry,Rz,t_steps)
-plot_predicted_ts(X2,Y2,Ynrx,YR[:len(Ynrx[:,None])],0)
-plot_predicted_ts(X2,Y2,Ynry,YR[:len(Ynry[:,None])],1)
-plot_predicted_ts(X2,Y2,Ynrz,YR[:len(Ynrz[:,None])],2)
+plot_predicted_ts(X2,Y2,YNRx,YR[:len(Ynrx[:,None])],0)
+plot_predicted_ts(X2,Y2,YNRy,YR[:len(Ynry[:,None])],1)
+plot_predicted_ts(X2,Y2,YNRz,YR[:len(Ynrz[:,None])],2)
