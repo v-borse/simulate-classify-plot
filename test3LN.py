@@ -60,6 +60,32 @@ def ideal3(pt,t_steps):
     
     return XT,XT1,XT2,Y
 
+def gen_ideal(pt,t_steps,n):
+    
+    col=[str(j).zfill(2) for j in range(1,n+1)]
+    print(col)
+    dfg=pd.DataFrame()
+    #dfg = pd.DataFrame(columns=[col])
+    #print(dfg)
+    X= pt[:-t_steps]
+    Y = pt[t_steps:]
+    for i in range(n+1):
+        if(i+1<=n):
+#            this_column = dfg.columns[i]
+#            print(this_column)
+#            dfg[this_column] = [i, i+1]
+            XTi= np.power(X[:,0],i+1)
+            print(XTi)
+            #dfg[this_column]=pd.Series(XTi)
+            #print(dfg)
+            dfg = pd.concat([dfg, pd.Series(XTi)], axis=1)
+            
+            print(dfg)
+            
+    return X,Y,dfg
+    
+    
+
 def plot_predicted_ts1(X2,Y2, Yp, index):
     
     fig, axs = plt.subplots(4, 2, sharex=False, sharey=False, figsize=(15, 5))
@@ -168,7 +194,7 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     axs[3,0].set_xlabel("predicted Time series")
     
     axs[3,1].plot(Yp[5000:],'b^')
-    axs[3,1].plot(Yr[5000:,index],'r.')
+    axs[3,1].plot(Yrp[5000:,index],'r.')
     #axs[3,1].plot(Yp[5000:],'b^',Yrp[5000:, index],'r.')
     #axs[1,1].plot(Y2[:, index])
     #axs[1,1].plot(Yp)
@@ -317,16 +343,16 @@ def R_predict_multi2(pts2,modelx,modely,modelz,t_steps):
 r=28
 R=1
 tlength = 10000
-t_steps = 1
+t_steps = 5
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 
 X1, Y1 = ideal(pts,1)
 X2, Y2 = ideal(pts2,t_steps)
 X3, Y3 = ideal(pts2,1)
+X4, Y4, dfgg = gen_ideal(pts,t_steps,t_steps)
 
-
-
+"""
 #----------UNIVARIATE-------------------------------------
 
 #---------Non- Recursive---------------------------------------
@@ -487,3 +513,4 @@ YR = R_predict_multi2(pts2,Rx,Ry,Rz,t_steps)
 plot_predicted_ts(X2,Y2,YNRx,YR[:len(Ynrx[:,None])],0)
 plot_predicted_ts(X2,Y2,YNRy,YR[:len(Ynry[:,None])],1)
 plot_predicted_ts(X2,Y2,YNRz,YR[:len(Ynrz[:,None])],2)
+"""
