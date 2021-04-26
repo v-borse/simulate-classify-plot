@@ -64,27 +64,60 @@ def gen_ideal(pt,t_steps,n):
     
     col=[str(j).zfill(2) for j in range(1,n+1)]
     print(col)
-    dfg=pd.DataFrame()
+    dfgx=pd.DataFrame()
+    
+#    dfgy=pd.DataFrame()
+#    dfgz=pd.DataFrame()
+    #dfX=pd.DataFrame()
+    #dfg.rename(columns=lambda col: col[1:], inplace=True)
+    #dfg.columns=[col]
     #dfg = pd.DataFrame(columns=[col])
     #print(dfg)
     X= pt[:-t_steps]
     Y = pt[t_steps:]
     for i in range(n+1):
         if(i+1<=n):
-#            this_column = dfg.columns[i]
-#            print(this_column)
-#            dfg[this_column] = [i, i+1]
+            #this_column = dfgx.columns[i]
+            #print(this_column)
+            dfgx[i] = [i, i+1]
+            xti= np.power(X[:,0],i+1)
+            #yti= np.power(X[:,1],i+1)
+            #zti= np.power(X[:,2],i+1)
+            dfgx[i]=pd.Series(xti)
+            print(dfgx)
+            dfgx = pd.concat([dfgx, pd.Series(xti)], axis=1)
+            #print(dfgx)
+            #dfy = pd.concat([dfy, pd.Series(yti)], axis=1)
+            #dfz = pd.concat([dfz, pd.Series(zti)], axis=1)
+    #dfx.rename(columns=dict(zip(dfx, col)))
+#    dfx.rename(columns=lambda x, y=iter(col): next(y))
+#    print(dfx)       
+    #dfX=pd.concat([dfx,dfy,dfz],axis=1)
+    return X,Y,dfgx
+ 
+def gen_ideal2(pt,t_steps,n):
+    
+    col=[str(j).zfill(2) for j in range(1,n+1)]
+    print(col)
+    #dfg=pd.DataFrame()
+    dfg = pd.DataFrame(columns=[col])
+    #print(dfg)
+    X= pt[:-t_steps]
+    Y = pt[t_steps:]
+    for i in range(n+1):
+        if(i+1<=n):
+            this_column = dfg.columns[i]
+            print(this_column)
+            #dfg[this_column] = [i, i+1]
             XTi= np.power(X[:,0],i+1)
             print(XTi)
-            #dfg[this_column]=pd.Series(XTi)
-            #print(dfg)
-            dfg = pd.concat([dfg, pd.Series(XTi)], axis=1)
+            dfg[this_column]=pd.Series(XTi)
+#            #print(dfg)
+#            dfg = pd.concat([dfg, pd.Series(XTi)], axis=1)
             
             print(dfg)
             
-    return X,Y,dfg
-    
-    
+    return X,Y,dfg    
 
 def plot_predicted_ts1(X2,Y2, Yp, index):
     
@@ -137,6 +170,7 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     fig, axs = plt.subplots(4, 2, sharex=False, sharey=False, figsize=(15, 15))
     fig.suptitle(' Linear Regression; dt=0.01')
     
+    
     axs[0,0].scatter(Yp, Y2[:, index],c='k',s=2)
     axs[0,0].plot(Y2[:, index],Y2[:, index],'g')
     #axs[0,0].set_xlim([-50,50])
@@ -153,8 +187,8 @@ def plot_predicted_ts(X2,Y2, Yp, Yrp,index):
     axs[0,1].set_ylabel("y_ideal")
     axs[0,1].set_title("Recursive LN")
     
-       
-    axs[1,0].scatter(X2[:, index], Y2[:, index],c='k', s=2)
+    #axs[1,0].scatter(X2[:, index], Y2[:, index],c='k', s=2)
+    
     axs[1,0].scatter(X2[:, index], Yp,c='b', s=2)
     axs[1,0].scatter(X2[:, index], Yrp[:, index],c='r', s=2) 
     #axs[1,0].set_xlim([-50,50])
@@ -262,7 +296,7 @@ def r_predict_uni2(pts2,modelx,modely,modelz,t_steps):
     sns.reset_orig()  # get default matplotlib styles back
     clrs = sns.color_palette('husl', n_colors=NUM_COLORS)  # a list of RGB tuples
     fig, ax = plt.subplots(1)
-    for i in range(t_steps):
+    for i in range(1,t_steps+1):
         tx=df4[['tXT1x','tXT2x']]
         ty=df4[['tXT1y','tXT2y']]
         tz=df4[['tXT1z','tXT2z']]
@@ -315,7 +349,7 @@ def R_predict_multi2(pts2,modelx,modely,modelz,t_steps):
     clrs = sns.color_palette('husl', n_colors=NUM_COLORS)  # a list of RGB tuples
     fig, ax = plt.subplots(1)
     
-    for i in range(t_steps):
+    for i in range(1,t_steps+1):
         tx=df5[['tXT1x','tXT2x','tXT1y','tXT2y','tXT1z','tXT2z']] # Multivariate
 
         Yrx=modelx.predict(tx)
@@ -350,9 +384,9 @@ pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 X1, Y1 = ideal(pts,1)
 X2, Y2 = ideal(pts2,t_steps)
 X3, Y3 = ideal(pts2,1)
-X4, Y4, dfgg = gen_ideal(pts,t_steps,t_steps)
+X4, Y4, dfgg = gen_ideal2(pts,t_steps,t_steps)
 
-"""
+
 #----------UNIVARIATE-------------------------------------
 
 #---------Non- Recursive---------------------------------------
@@ -434,8 +468,8 @@ rz.fit(xz, yz)
 
 Yr = r_predict_uni2(pts2,rx,ry,rz,t_steps)
 plot_predicted_ts(X2,Y2,Ynrx,Yr[:len(Ynrx[:,None])],0)
-plot_predicted_ts(X2,Y2,Ynry,Yr[:len(Ynry[:,None])],1)
-plot_predicted_ts(X2,Y2,Ynrz,Yr[:len(Ynrz[:,None])],2)
+#plot_predicted_ts(X2,Y2,Ynry,Yr[:len(Ynry[:,None])],1)
+#plot_predicted_ts(X2,Y2,Ynrz,Yr[:len(Ynrz[:,None])],2)
 
 
 
@@ -511,6 +545,6 @@ Rz.fit(x,yz)
 
 YR = R_predict_multi2(pts2,Rx,Ry,Rz,t_steps)
 plot_predicted_ts(X2,Y2,YNRx,YR[:len(Ynrx[:,None])],0)
-plot_predicted_ts(X2,Y2,YNRy,YR[:len(Ynry[:,None])],1)
-plot_predicted_ts(X2,Y2,YNRz,YR[:len(Ynrz[:,None])],2)
-"""
+#plot_predicted_ts(X2,Y2,YNRy,YR[:len(Ynry[:,None])],1)
+#plot_predicted_ts(X2,Y2,YNRz,YR[:len(Ynrz[:,None])],2)
+
