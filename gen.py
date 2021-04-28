@@ -127,6 +127,7 @@ def Ideal_poly(_x,_order,t_steps):
     
     return XX,Y
 
+
 def Ideal_lags(_X,tsteps,tlags):
     Xti=[]
     for i in range(0,tlags+1):
@@ -278,7 +279,7 @@ N=len(pts)
 #P=3
 
 order=2
-t_steps=1
+t_steps=50
 t_lags=2
 
 pts=single_traj(4,-14,21,r,0.01,tlength) 
