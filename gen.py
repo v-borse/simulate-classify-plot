@@ -6,6 +6,7 @@ Created on Mon Apr 26 16:35:38 2021
 @author: vborse
 """
 
+
 from IPython.display import clear_output, display, HTML
 
 import numpy as np
@@ -34,12 +35,13 @@ from module import lorenz
 from module import single_traj
 
 def plot_predicted_ts(X,Y, Yp, Yrp,index):
-    fig, axs = plt.subplots(4, 2, sharex=False, sharey=False, figsize=(15, 15))
+    fig, axs = plt.subplots(3, 2, sharex=False, sharey=False, figsize=(15, 15))
     fig.suptitle(' Linear Regression; dt=0.01')
     
     
     axs[0,0].scatter(Yp, Y,c='k',s=2)
     axs[0,0].plot(Y,Y,'g')
+    axs[0,0].legend()
     #axs[0,0].set_xlim([-50,50])
     #axs[0,0].set_ylim([-50,50])
     axs[0,0].set_xlabel("y_pred")
@@ -53,509 +55,301 @@ def plot_predicted_ts(X,Y, Yp, Yrp,index):
     axs[0,1].set_xlabel("y_pred")
     axs[0,1].set_ylabel("y_ideal")
     axs[0,1].set_title("Recursive LN")
+      
     
-    #axs[1,0].scatter(X2[:, index], Y2[:, index],c='k', s=2)
+    axs[1,0].plot((Yp-Y), 'b')
+    axs[1,0].set_ylabel("error")
+    axs[1,0].set_xlabel("time_steps")
+    axs[1,0].set_title("Errors for non-recursive LN")
     
-    axs[1,0].scatter(X, Yp,c='b', s=2)
-    axs[1,0].scatter(X, Yrp[:, index],c='r', s=2) 
-    #axs[1,0].set_xlim([-50,50])
-    #axs[1,0].set_ylim([-50,50])
-    axs[1,0].set_xlabel("X(x,y,z)")
-    axs[1,0].set_ylabel("Y")
-    axs[1,0].set_title("X and Y")
-    
-    axs[1,1].plot((Yp-Y), 'b')
     axs[1,1].plot(Yrp[:, index]-Y, 'r')
-    #axs[2,0].set_ylim([-50,50])
     axs[1,1].set_ylabel("error")
     axs[1,1].set_xlabel("time_steps")
-    axs[1,1].set_title("Errors for LN")
+    axs[1,1].set_title("Errors for recursive LN")
+     
     
+    axs[2,0].plot(Yp[:100],'b^',Yrp[:100, index],'r.')
+    axs[2,0].set_xlabel("predicted time series")
     
-    axs[2,0].plot(X[:5000],'g^',Y[:5000],'y.')
-    #axs[1,1].plot(Y2[:, index])
-    #axs[1,1].plot(Yp)
-    #axs[1,1].plot(Yrp[:, index])
-    #axs[1,1].set_ylim([-60,60])
-    axs[2,0].set_xlabel("X and Y_ideal Time series")
-    
-    axs[2,1].plot(X[5000:],'g^',Y[5000:],'y.')
-    #axs[1,1].plot(Y2[:, index])
-    #axs[1,1].plot(Yp)
-    #axs[1,1].plot(Yrp[:, index])
-    #axs[1,1].set_ylim([-60,60])
-    axs[2,1].set_xlabel("X and Y_ideal Time series")
-    
-    
-    axs[3,0].plot(Yp[:5000],'b^',Yrp[:5000, index],'r.')
-    #axs[1,1].plot(Y2[:, index])
-    #axs[1,1].plot(Yp)
-    #axs[1,1].plot(Yrp[:, index])
-    #axs[1,1].set_ylim([-60,60])
-    axs[3,0].set_xlabel("predicted Time series")
-    
-    axs[3,1].plot(Yp[5000:],'b^')
-    axs[3,1].plot(Yrp[5000:,index],'r.')
-    #axs[3,1].plot(Yp[5000:],'b^',Yrp[5000:, index],'r.')
-    #axs[1,1].plot(Y2[:, index])
-    #axs[1,1].plot(Yp)
-    #axs[1,1].plot(Yrp[:, index])
-    #axs[1,1].set_ylim([-60,60])
-    axs[3,1].set_xlabel("predicted Time series")
+    axs[2,1].plot(Yp[500:600],'b^')
+    axs[2,1].plot(Yrp[500:600,index],'r.')
+    axs[2,1].set_xlabel("predicted time series")
        
     plt.show()
     
-def coef_of_detrm(actual,predicted):
-     
-    corr_matrix = np.corrcoef(actual, predicted)
-    corr = corr_matrix[0,1]
-    R_sq = corr**2
-    sns.heatmap(corr_matrix)
-    plt.show()
-    return R_sq
+def gen_r_predict_uni(_X,modelx,modely,modelz,t_steps):
+    _X=np.copy(_X)
+    for i in range(1,t_steps+1):
+                 
+        Yrx=modelx.predict(_X[:,[0,3]])
+        Yry=modely.predict(_X[:,[1,4]])
+        Yrz=modelz.predict(_X[:,[2,5]])
+        
+        _X[:,0] = _X[:,3]
+        _X[:,1] = _X[:,4]
+        _X[:,2] = _X[:,5]
+        
+        _X[:,3] = Yrx
+        _X[:,4] = Yry
+        _X[:,5] = Yrz
+        
+    Xnew = np.array([Yrx,Yry,Yrz])
+    return Xnew.T
+
+
+
+def gen_R_predict_multi(_X,modelx,modely,modelz,t_steps):
+    _X=np.copy(_X) 
+    for i in range(1,t_steps+1):
+        
+        Yrx=modelx.predict(_X[:,[0,1,2,3,4,5]])
+        Yry=modely.predict(_X[:,[0,1,2,3,4,5]])
+        Yrz=modelz.predict(_X[:,[0,1,2,3,4,5]])
+        
+        _X[:,0] = _X[:,3]
+        _X[:,1] = _X[:,4]
+        _X[:,2] = _X[:,5]
+        
+        _X[:,3] = Yrx
+        _X[:,4] = Yry
+        _X[:,5] = Yrz
+        
+    Xnew = np.array([Yrx,Yry,Yrz])
+    return Xnew.T
+
 
 
 def Ideal_poly(_x,_order,t_steps):
     _X=_x[:-t_steps]
-    n=np.size(_X,axis=0)
     Y =_x[t_steps:]
-    xx=[]
+    XX=[]
     for i in range(1,_order+1):
-        x=np.power(_X,i)
-        xx.append(x)
-    XX=np.transpose(xx,(1,0,2)).reshape(n,-1)
+        
+        XX=np.concatenate((_X, np.power(_X,i)), axis=1)
+        print(np.shape(XX))
+    
     
     return XX,Y
 
 
+    
 def Ideal_lags(_X,tsteps,tlags):
-    Xti=[]
-    for i in range(0,tlags+1):
-        xti=_X[i:-(tsteps+tlags-i)]
-        Xti.append(xti)
-        print(np.shape(xti))
+    Xti=_X[:-(tsteps+tlags)]
+    for i in range(1,tlags+1):
+        
+        Xti=np.concatenate((Xti, _X[i:-(tsteps+tlags-i)]), axis=1)
+        print(np.shape(Xti))
     
-    l= np.size(Xti,axis=1)
-    Xx=np.transpose(Xti,(1,0,2)).reshape(l,-1)   
-    Y  =  _X[(tsteps+tlags):]
+    Y  =_X[(tsteps+tlags):]
     
-    return(Xx,Y)
+    return(Xti,Y)      
 
-def create_df(_X):
-    
-    col=[str(j).zfill(2) for j in range(1,(np.size(_X,axis=1))+1)]
-    #print(col)
-    dfg = pd.DataFrame(_X, columns = [col])
-    
-    return dfg
-
-    
-
-def gen_r_predict_uni(dfg,modelx,modely,modelz,t_steps):
-#def gen_r_predict_uni(dfg,t_steps):
-    
-#    co=np.arange(0,np.size(dfg,axis=1),3)
-#    print(co)
-    cox=[str(j).zfill(2) for j in range(4,np.size(dfg,axis=1)+1,3)]
-    coy=[str(j).zfill(2) for j in range(5,np.size(dfg,axis=1)+1,3)]
-    coz=[str(j).zfill(2) for j in range(6,np.size(dfg,axis=1)+1,3)]
-#    print(cox)
-#    print(coy)
-#    print(coz)
-#    print(dfg)
-    for i in range(1,t_steps+1):
-        tx= dfg[[cox[0],cox[1]]]
-        #print(tx)
-        ty=dfg[[coy[0],coy[1]]]
-        tz=dfg[[coz[0],coz[1]]]
-         
-        Yrx=modelx.predict(tx)
-        Yry=modely.predict(ty)
-        Yrz=modelz.predict(tz)
-        
-        dfg[cox[0]] = dfg[cox[1]]
-        dfg[coy[0]] = dfg[coy[1]]
-        dfg[coz[0]] = dfg[coz[1]]
-        
-        dfg[cox[0]] = Yrx
-        dfg[coy[0]] = Yry
-        dfg[coz[0]] = Yrz
-        
-    Xnew = np.array([Yrx,Yry,Yrz])
-    print(dfg)
-    return Xnew.T
-
-def poly_gen_r_predict_uni(dfg,modelx,modely,modelz,t_steps):
-#def gen_r_predict_uni(dfg,t_steps):
-    
-#    co=np.arange(0,np.size(dfg,axis=1),3)
-#    print(co)
-    cox=[str(j).zfill(2) for j in range(1,np.size(dfg,axis=1)+1,3)]
-    coy=[str(j).zfill(2) for j in range(2,np.size(dfg,axis=1)+1,3)]
-    coz=[str(j).zfill(2) for j in range(3,np.size(dfg,axis=1)+1,3)]
-#    print(cox)
-#    print(coy)
-#    print(coz)
-#    print(dfg)
-    for i in range(1,t_steps+1):
-        tx= dfg[[cox[0],cox[1]]]
-        #print(tx)
-        ty=dfg[[coy[0],coy[1]]]
-        tz=dfg[[coz[0],coz[1]]]
-         
-        Yrx=modelx.predict(tx)
-        Yry=modely.predict(ty)
-        Yrz=modelz.predict(tz)
-        
-        dfg[cox[0]] = dfg[cox[1]]
-        dfg[coy[0]] = dfg[coy[1]]
-        dfg[coz[0]] = dfg[coz[1]]
-        
-        dfg[cox[0]] = Yrx
-        dfg[coy[0]] = Yry
-        dfg[coz[0]] = Yrz
-        
-    Xnew = np.array([Yrx,Yry,Yrz])
-    print(dfg)
-    return Xnew.T
-    
-def gen_R_predict_multi(dfg,modelx,modely,modelz,t_steps):
-    
-    cox=[str(j).zfill(2) for j in range(4,np.size(dfg,axis=1)+1,3)]
-    coy=[str(j).zfill(2) for j in range(5,np.size(dfg,axis=1)+1,3)]
-    coz=[str(j).zfill(2) for j in range(6,np.size(dfg,axis=1)+1,3)]
-    
-    for i in range(1,t_steps+1):
-        
-        tx=dfg[[cox[0],cox[1],coy[0],coy[1],coz[0],coz[1]]] # Multivariate
-        
-        Yrx=modelx.predict(tx)
-        Yry=modely.predict(tx)
-        Yrz=modelz.predict(tx)
-        
-        dfg[cox[0]] = dfg[cox[1]]
-        dfg[coy[0]] = dfg[coy[1]]
-        dfg[coz[0]] = dfg[coz[1]]
-        
-        dfg[cox[0]] = Yrx
-        dfg[coy[0]] = Yry
-        dfg[coz[0]] = Yrz
-        
-    Xnew = np.array([Yrx,Yry,Yrz])
-    print(tx)
-    return Xnew.T
-
-def poly_gen_R_predict_multi(dfg,modelx,modely,modelz,t_steps):
-    
-    cox=[str(j).zfill(2) for j in range(1,np.size(dfg,axis=1)+1,3)]
-    coy=[str(j).zfill(2) for j in range(2,np.size(dfg,axis=1)+1,3)]
-    coz=[str(j).zfill(2) for j in range(3,np.size(dfg,axis=1)+1,3)]
-    
-    for i in range(1,t_steps+1):
-        
-        tx=dfg[[cox[0],cox[1],coy[0],coy[1],coz[0],coz[1]]] # Multivariate
-        
-        Yrx=modelx.predict(tx)
-        Yry=modely.predict(tx)
-        Yrz=modelz.predict(tx)
-        
-        dfg[cox[0]] = dfg[cox[1]]
-        dfg[coy[0]] = dfg[coy[1]]
-        dfg[coz[0]] = dfg[coz[1]]
-        
-        dfg[cox[0]] = Yrx
-        dfg[coy[0]] = Yry
-        dfg[coz[0]] = Yrz
-        
-    Xnew = np.array([Yrx,Yry,Yrz])
-    print(tx)
-    return Xnew.T
-    
 r=28
 R=1
 tlength = 10000
 
-N=len(pts)
+#N=len(pts)
 #P=3
 
-order=2
-t_steps=50
-t_lags=2
+order=3
+t_steps=1
+t_lags=1
 
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
+N=len(pts)
 
-X6 = Ideal_poly(pts,order,t_steps)
-X5, Y5 = Ideal_lags(pts,t_steps,t_lags)
-X7, Y7 = Ideal_lags(pts2,t_steps,t_lags)
-df=create_df(X5)
+Xr_t1,Yr_t1 = Ideal_lags(pts,1,t_lags)
+Xtrain, Ytrain = Ideal_lags(pts,t_steps,t_lags)
+Xtest, Ytest = Ideal_lags(pts2,t_steps,t_lags)
 
-X8, Y8 = Ideal_poly(pts,order,t_steps)
-X9, Y9 = Ideal_poly(pts2,order,t_steps)
+Xpr_t1,Ypr_t1 = Ideal_poly(pts,2,t_steps)
+Xp_train, Yp_train = Ideal_poly(pts,order,t_steps)
+Xp_test, Yp_test = Ideal_poly(pts2,order,t_steps)
 
-#gen_r_predict_uni(df,t_steps)
+
+
 #-------POLYNOMIAL COVARIATES----------------------------
 #----------UNIVARIATE-------------------------------------
 
 #---------Non- Recursive---------------------------------------
-X_train=create_df(X8)
-X_test=create_df(X9)
 
-colx=[str(j).zfill(2) for j in range(1,np.size(X_train,axis=1)+1,3)]
-coly=[str(j).zfill(2) for j in range(2,np.size(X_train,axis=1)+1,3)]
-colz=[str(j).zfill(2) for j in range(3,np.size(X_train,axis=1)+1,3)]
-# prediction with sklearn
-xx=X_train[[colx[0],colx[1]]] #Univariate
-xy=X_train[[coly[0],coly[1]]]
-xz=X_train[[colz[0],colz[1]]]
-
-yx=Y8[:,0]
-yy=Y8[:,1]
-yz=Y8[:,2]
 
 regr_x = linear_model.LinearRegression()
-regr_x.fit(xx, yx)
+regr_x.fit(Xp_train[:, [0,3]], Yp_train[:, 0])
 
 print('Intercept: \n', regr_x.intercept_)
 print('Coefficients: \n', regr_x.coef_)
 
 regr_y = linear_model.LinearRegression()
-regr_y.fit(xy, yy)
+regr_y.fit(Xp_train[:, [1,4]], Yp_train[:, 1])
 
 
 regr_z = linear_model.LinearRegression()
-regr_z.fit(xz, yz)
+regr_z.fit(Xp_train[:, [2,5]], Yp_train[:, 2])
 
 
-txx=X_test[[colx[0],colx[1]]] 
-txy=X_test[[coly[0],coly[1]]] 
-txz=X_test[[colz[0],colz[1]]] 
 
 
-Ynrx=regr_x.predict(txx)
-Ynry=regr_y.predict(txy)
-Ynrz=regr_z.predict(txz)
+Ynrx=regr_x.predict(Xp_test[:, [0,3]])
+Ynry=regr_y.predict(Xp_test[:, [1,4]])
+Ynrz=regr_z.predict(Xp_test[:, [2,5]])
 
-#plot_predicted_ts(X2,Y2,predictions_x,0)
-#plot_predicted_ts(X2,Y2,predictions_y,1)
-#plot_predicted_ts(X2,Y2,predictions_z,2)
+#plot_predicted_ts(X9[:,0],Y9[:,0],Ynrx,0)
+#plot_predicted_ts(X9[:,1],Y9[:,1],Ynry,1)
+#plot_predicted_ts(X9[:,2],Y9[:,2],Ynrz,2)
 
 
 #------RECURSIVE----------------------
 
 
 rx = linear_model.LinearRegression()
-rx.fit(xx, yx)
+rx.fit(Xpr_t1[:, [0,3]], Ypr_t1[:, 0])
 
 ry = linear_model.LinearRegression()
-ry.fit(xy, yy)
+ry.fit(Xpr_t1[:, [1,4]], Ypr_t1[:, 1])
 
 rz = linear_model.LinearRegression()
-rz.fit(xz, yz)
+rz.fit(Xpr_t1[:, [2,5]], Ypr_t1[:, 2])
 
 #-------prediction-------------------
 
-Yr = poly_gen_r_predict_uni(X_test,rx,ry,rz,t_steps)
+Yr = gen_r_predict_uni(Xp_test,rx,ry,rz,t_steps)
 
 
-plot_predicted_ts(X9[:,0],Y9[:,0],Ynrx,Yr[:len(Ynrx[:,None])],0)
-plot_predicted_ts(X9[:,1],Y9[:,1],Ynry,Yr[:len(Ynry[:,None])],1)
-plot_predicted_ts(X9[:,2],Y9[:,2],Ynrz,Yr[:len(Ynrz[:,None])],2)
+plot_predicted_ts(Xp_test[:,0],Yp_test[:,0],Ynrx,Yr,0)
+plot_predicted_ts(Xp_test[:,1],Yp_test[:,1],Ynry,Yr,1)
+plot_predicted_ts(Xp_test[:,2],Yp_test[:,2],Ynrz,Yr,2)
 
 #============MULTIVARIATE======================
 
 #---------------Non-Recursive-----------------
 
-col_m=[str(j).zfill(2) for j in range(1,np.size(X_train,axis=1)+1)]
-x=X_train[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5]]] # Multivariate
-#x=X_train[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5],col_m[6],col_m[7],col_m[8]]]
-#yx=Y5[:,0]
-#yy=Y5[:,1]
-#yz=Y5[:,2]
-
-yx=Y8[:,0]
-yy=Y8[:,1]
-yz=Y8[:,2]
-
-
 model_x=linear_model.LinearRegression()
-model_x.fit(x,yx)
+model_x.fit(Xp_train[:,[0,1,2,3,4,5]], Yp_train[:,0])
 
 model_y=linear_model.LinearRegression()
-model_y.fit(x,yy)
+model_y.fit(Xp_train[:,[0,1,2,3,4,5]], Yp_train[:,1])
 
 model_z=linear_model.LinearRegression()
-model_z.fit(x,yz)
+model_z.fit(Xp_train[:,[0,1,2,3,4,5]], Yp_train[:,2])
 
 #====predict==================================
 
-Tx=X_test[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5]]]
-#Tx=X_test[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5],col_m[6],col_m[7],col_m[8]]]
 
-YNRx=model_x.predict(Tx)
-YNRy=model_y.predict(Tx)
-YNRz=model_z.predict(Tx)
 
-#plot_predicted_ts(X2,Y2,Ynrx,0)
-#plot_predicted_ts(X2,Y2,Ynry,1)
-#plot_predicted_ts(X2,Y2,Ynrz,2)
+YNRx=model_x.predict(Xp_test[:,[0,1,2,3,4,5]])
+YNRy=model_y.predict(Xp_test[:,[0,1,2,3,4,5]])
+YNRz=model_z.predict(Xp_test[:,[0,1,2,3,4,5]])
+
+#plot_predicted_ts(X9[:,3],Y9[:,0],Ynrx,Yr,0)
+#plot_predicted_ts(X9[:,4],Y9[:,1],Ynry,Yr,1)
+#plot_predicted_ts(X9[:,5],Y9[:,2],Ynrz,Yr,2)
 
 #----RECURSIVE-------------------------------------
 
 Rx=linear_model.LinearRegression()
-Rx.fit(x,yx)
+Rx.fit(Xpr_t1[:,[0,1,2,3,4,5]], Ypr_t1[:,0])
 
 Ry=linear_model.LinearRegression()
-Ry.fit(x,yy)
+Ry.fit(Xpr_t1[:,[0,1,2,3,4,5]], Ypr_t1[:,1])
 
 Rz=linear_model.LinearRegression()
-Rz.fit(x,yz)
+Rz.fit(Xpr_t1[:,[0,1,2,3,4,5]], Ypr_t1[:,2])
 
-YR = poly_gen_R_predict_multi(X_test,Rx,Ry,Rz,t_steps)
+YR = gen_R_predict_multi(Xp_test,Rx,Ry,Rz,t_steps)
 
 
-plot_predicted_ts(X9[:,0],Y9[:,0],YNRx,YR[:len(YNRx[:,None])],0)
-plot_predicted_ts(X9[:,1],Y9[:,1],YNRy,YR[:len(YNRy[:,None])],1)
-plot_predicted_ts(X9[:,2],Y9[:,2],YNRz,YR[:len(YNRz[:,None])],2)
+plot_predicted_ts(Xp_test[:,0],Yp_test[:,0],YNRx,YR,0)
+plot_predicted_ts(Xp_test[:,1],Yp_test[:,1],YNRy,YR,1)
+plot_predicted_ts(Xp_test[:,2],Yp_test[:,2],YNRz,YR,2)
 #sns.heatmap(np.corrcoef(Y7[:,0],YR[:,0]),vmin=0.9,vmax=1)
-
-
 """
-#*************************************************************************
-#======================================================================
-#----------UNIVARIATE-------------------------------------
+#************************************************************
 
-#---------Non- Recursive---------------------------------------
-#X_train=create_df(X5)
-#X_test=create_df(X7)
 
-colx=[str(j).zfill(2) for j in range(4,np.size(X_train,axis=1)+1,3)]
-coly=[str(j).zfill(2) for j in range(5,np.size(X_train,axis=1)+1,3)]
-colz=[str(j).zfill(2) for j in range(6,np.size(X_train,axis=1)+1,3)]
-# prediction with sklearn
-xx=X_train[[colx[0],colx[1]]] #Univariate
-xy=X_train[[coly[0],coly[1]]]
-xz=X_train[[colz[0],colz[1]]]
-#yx=Y5[:,0]
-#yy=Y5[:,1]
-#yz=Y5[:,2]
+#-----UNIVARIATE-----------------------
 
-yx=Y8[:,0]
-yy=Y8[:,1]
-yz=Y8[:,2]
+#-------Non-recursive------------------
 
 regr_x = linear_model.LinearRegression()
-regr_x.fit(xx, yx)
+regr_x.fit(Xtrain[:, [0,3]], Ytrain[:, 0])
 
 print('Intercept: \n', regr_x.intercept_)
 print('Coefficients: \n', regr_x.coef_)
 
 regr_y = linear_model.LinearRegression()
-regr_y.fit(xy, yy)
+regr_y.fit(Xtrain[:, [1,4]], Ytrain[:, 1])
 
 
 regr_z = linear_model.LinearRegression()
-regr_z.fit(xz, yz)
+regr_z.fit(Xtrain[:, [2,5]], Ytrain[:, 2])
 
+Ynrx=regr_x.predict(Xtest[:, [0,3]])
+Ynry=regr_y.predict(Xtest[:, [1,4]])
+Ynrz=regr_z.predict(Xtest[:, [2,5]])
 
-txx=X_test[[colx[0],colx[1]]] 
-txy=X_test[[coly[0],coly[1]]] 
-txz=X_test[[colz[0],colz[1]]] 
-
-
-Ynrx=regr_x.predict(txx)
-Ynry=regr_y.predict(txy)
-Ynrz=regr_z.predict(txz)
-
-#plot_predicted_ts(X2,Y2,predictions_x,0)
-#plot_predicted_ts(X2,Y2,predictions_y,1)
-#plot_predicted_ts(X2,Y2,predictions_z,2)
-
+#plot_predicted_ts(X5[:,0],Y5[:,0],Ynrx,0)
+#plot_predicted_ts(X5[:,1],Y5[:,1],Ynry,1)
+#plot_predicted_ts(X5[:,2],Y5[:,2],Ynrz,2)
 
 #------RECURSIVE----------------------
 
 
 rx = linear_model.LinearRegression()
-rx.fit(xx, yx)
+rx.fit(Xr_t1[:,[0,3]], Yr_t1[:, 0])
 
 ry = linear_model.LinearRegression()
-ry.fit(xy, yy)
+ry.fit(Xr_t1[:,[1,4]], Yr_t1[:,1])
 
 rz = linear_model.LinearRegression()
-rz.fit(xz, yz)
+rz.fit(Xr_t1[:,[2,5]], Yr_t1[:,2])
 
 #-------prediction-------------------
 
-Yr = gen_r_predict_uni(X_test,rx,ry,rz,t_steps)
+Yr = gen_r_predict_uni(Xtest,rx,ry,rz,t_steps)
 
-#plot_predicted_ts(X7[:,0],Y7[:,0],Ynrx,Yr[:len(Ynrx[:,None])],0)
-#plot_predicted_ts(X7[:,1],Y7[:,1],Ynry,Yr[:len(Ynry[:,None])],1)
-#plot_predicted_ts(X7[:,2],Y7[:,2],Ynrz,Yr[:len(Ynrz[:,None])],2)
 
-plot_predicted_ts(X9[:,0],Y9[:,0],Ynrx,Yr[:len(Ynrx[:,None])],0)
-plot_predicted_ts(X9[:,1],Y9[:,1],Ynry,Yr[:len(Ynry[:,None])],1)
-plot_predicted_ts(X9[:,2],Y9[:,2],Ynrz,Yr[:len(Ynrz[:,None])],2)
+plot_predicted_ts(Xtest[:,3],Ytest[:,0],Ynrx,Yr,0)
+plot_predicted_ts(Xtest[:,4],Ytest[:,1],Ynry,Yr,1)
+plot_predicted_ts(Xtest[:,5],Ytest[:,2],Ynrz,Yr,2)
 
-#sns.heatmap(np.corrcoef(Y7[:,0],Yr[:,0]),vmin=0.9,vmax=1)
 
 
 #============MULTIVARIATE======================
 
 #---------------Non-Recursive-----------------
 
-col_m=[str(j).zfill(2) for j in range(4,np.size(X_train,axis=1)+1)]
-x=X_train[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5]]] # Multivariate
-#x=X_train[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5],col_m[6],col_m[7],col_m[8]]]
-#yx=Y5[:,0]
-#yy=Y5[:,1]
-#yz=Y5[:,2]
-
-yx=Y8[:,0]
-yy=Y8[:,1]
-yz=Y8[:,2]
-
-
 model_x=linear_model.LinearRegression()
-model_x.fit(x,yx)
+model_x.fit(Xtrain[:,[0,1,2,3,4,5]], Ytrain[:,0])
 
 model_y=linear_model.LinearRegression()
-model_y.fit(x,yy)
+model_y.fit(Xtrain[:,[0,1,2,3,4,5]], Ytrain[:,1])
 
 model_z=linear_model.LinearRegression()
-model_z.fit(x,yz)
+model_z.fit(Xtrain[:,[0,1,2,3,4,5]], Ytrain[:,2])
 
 #====predict==================================
 
-Tx=X_test[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5]]]
-#Tx=X_test[[col_m[0],col_m[1],col_m[2],col_m[3],col_m[4],col_m[5],col_m[6],col_m[7],col_m[8]]]
-
-YNRx=model_x.predict(Tx)
-YNRy=model_y.predict(Tx)
-YNRz=model_z.predict(Tx)
-
-#plot_predicted_ts(X2,Y2,Ynrx,0)
-#plot_predicted_ts(X2,Y2,Ynry,1)
-#plot_predicted_ts(X2,Y2,Ynrz,2)
+YNRx=model_x.predict(Xtest[:,[0,1,2,3,4,5]])
+YNRy=model_y.predict(Xtest[:,[0,1,2,3,4,5]])
+YNRz=model_z.predict(Xtest[:,[0,1,2,3,4,5]])
 
 #----RECURSIVE-------------------------------------
 
 Rx=linear_model.LinearRegression()
-Rx.fit(x,yx)
+Rx.fit(Xr_t1[:,[0,1,2,3,4,5]], Yr_t1[:,0])
 
 Ry=linear_model.LinearRegression()
-Ry.fit(x,yy)
+Ry.fit(Xr_t1[:,[0,1,2,3,4,5]], Yr_t1[:,1])
 
 Rz=linear_model.LinearRegression()
-Rz.fit(x,yz)
+Rz.fit(Xr_t1[:,[0,1,2,3,4,5]], Yr_t1[:,2])
 
-YR = gen_R_predict_multi(X_test,Rx,Ry,Rz,t_steps)
+YR = gen_R_predict_multi(Xtest,Rx,Ry,Rz,t_steps)
 
-#plot_predicted_ts(X7[:,0],Y7[:,0],YNRx,YR[:len(YNRx[:,None])],0)
-#plot_predicted_ts(X7[:,1],Y7[:,1],YNRy,YR[:len(YNRy[:,None])],1)
-#plot_predicted_ts(X7[:,2],Y7[:,2],YNRz,YR[:len(YNRz[:,None])],2)
 
-plot_predicted_ts(X9[:,0],Y9[:,0],YNRx,YR[:len(YNRx[:,None])],0)
-plot_predicted_ts(X9[:,1],Y9[:,1],YNRy,YR[:len(YNRy[:,None])],1)
-plot_predicted_ts(X9[:,2],Y9[:,2],YNRz,YR[:len(YNRz[:,None])],2)
-#sns.heatmap(np.corrcoef(Y7[:,0],YR[:,0]),vmin=0.9,vmax=1)
+plot_predicted_ts(Xtest[:,3], Ytest[:,0],YNRx,YR,0)
+plot_predicted_ts(Xtest[:,4], Ytest[:,1],YNRy,YR,1)
+plot_predicted_ts(Xtest[:,5], Ytest[:,2],YNRz,YR,2)
 """
