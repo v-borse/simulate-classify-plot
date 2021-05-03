@@ -128,6 +128,7 @@ def GEN_R_predict_multi(_X,modelx,modely,modelz,t_steps,t_lags,ncol,order=1):
         Ynrz=modelz.predict(_X)
         
         Xnew=np.array([Ynrx,Ynry,Ynrz])
+        print(np.shape(Xnew.T))
         #print(np.shape(Xnew[:,:,None]))
         
         #Xnew=Xnew.reshape((len(Ynrx),1,ncol))
@@ -137,14 +138,15 @@ def GEN_R_predict_multi(_X,modelx,modely,modelz,t_steps,t_lags,ncol,order=1):
         for k in range(t_lags+1):
             #print(k)
             
-            if ((k+1)<t_lags):
+            if ((k+1)<=t_lags):
                 
                 _X[:,[c[k]]] = _X[:,[c[k+1]]]
                 #print(np.shape(_X[:,k]))
             #_X[:,-(k+1)] = Xnew[k]
-            _X[:,c[-1]] = Xnew.T
-        print(_X[:,c[-1]])
-        print(Xnew.T)
+            else:
+                _X[:,c[-1]] = Xnew.T
+#        print(_X[:,c[-1]])
+#        print(Xnew.T)
     return Xnew.T
 
 
