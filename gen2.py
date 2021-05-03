@@ -113,14 +113,14 @@ def grouped_col(ncol,t_lags,order=1):
     ff= np.arange(0,(ncol*(t_lags+1)),1)
     F=np.reshape(ff,((t_lags+1),ncol))
     
-    return F.T
+    return F
 
 
 def GEN_R_predict_multi(_X,modelx,modely,modelz,t_steps,t_lags,ncol,order=1):
     
     _X = np.copy(_X)
     c=grouped_col(ncol,t_lags,order)
-    
+    print(_X)
     for i in range(1,t_steps+1):
         
         Ynrx=modelx.predict(_X)
@@ -130,17 +130,21 @@ def GEN_R_predict_multi(_X,modelx,modely,modelz,t_steps,t_lags,ncol,order=1):
         Xnew=np.array([Ynrx,Ynry,Ynrz])
         #print(np.shape(Xnew[:,:,None]))
         
-        Xnew.reshape((len(Ynrx),1,ncol))
+        #Xnew=Xnew.reshape((len(Ynrx),1,ncol))
+        #print(np.shape(Xnew[0]))
         #print(np.shape(Xnew.T))
         #print(np.shape(Xnew.T[:,:,None]))
-        for k in range(ncol+1):
+        for k in range(t_lags+1):
             #print(k)
-            if ((k+1)<ncol):
+            
+            if ((k+1)<t_lags):
                 
                 _X[:,[c[k]]] = _X[:,[c[k+1]]]
-            
-            #_X[:,[-k*ncol]] = Xnew[k]
-  
+                #print(np.shape(_X[:,k]))
+            #_X[:,-(k+1)] = Xnew[k]
+            _X[:,c[-1]] = Xnew.T
+        print(_X[:,c[-1]])
+        print(Xnew.T)
     return Xnew.T
 
 
