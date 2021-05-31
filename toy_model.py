@@ -40,6 +40,8 @@ def Ideal_poly3(_X,_order,t_steps):
         xx.append(x)
         #yy.append(y)
     l= np.size(xx,axis=1)
+    print(l)
+    print(np.shape(xx))
     #ly= np.size(yy,axis=1)
     #XX=np.transpose(xx,(1,0,2)).reshape(N,-1)
     XX=np.transpose(xx,(1,0,2)).reshape(l,-1)
@@ -79,7 +81,7 @@ def Ideal_lags2(_X,tsteps,tlags):
     for i in range(1,tlags+1):
         #xti=X[i:-(tsteps+tlags-i)]
         Xti=np.concatenate((Xti, _X[i:-(tsteps+tlags-i)]), axis=1)
-        print(np.shape(Xti))
+        #print(np.shape(Xti))
     
 #    l= np.size(Xti,axis=1)
 #    Xx=np.transpose(Xti,(1,0,2)).reshape(l,-1)   
@@ -87,17 +89,26 @@ def Ideal_lags2(_X,tsteps,tlags):
     
     return(Xti,Y)      
     
-def grouped_col(ncol,t_lags,order):
+def grouped_col_uni(ncol,t_lags,order):
+    
+    ff= np.arange(0,(ncol*(t_lags+1)*order),1)
+    #F=np.reshape(ff,((t_lags+1),ncol*order))
+    F=np.reshape(ff,(ncol*order,(t_lags+1)))
+    
+    return F.T
+
+def grouped_col_multi(ncol,t_lags,order):
     
     ff= np.arange(0,(ncol*(t_lags+1)*order),1)
     F=np.reshape(ff,((t_lags+1),ncol*order))
+    
     
     return F
 
 def swap(_X,_Y,t_steps,t_lags,ncol,order):
     
     _X = np.copy(_X)
-    c=grouped_col(ncol,t_lags,order)
+    c=grouped_col_multi(ncol,t_lags,order)
     
 #    print(c)
     print(_X)
@@ -124,9 +135,10 @@ def swap(_X,_Y,t_steps,t_lags,ncol,order):
     return _X.T[:,c[-1]]
 
 def swap3(_X,_Y,t_steps,t_lags,ncol,order):
-    
+    print(np.shape(_X))
+    print(_X)
     _X = np.copy(_X)
-    c=grouped_col(ncol,t_lags,order)
+    c=grouped_col_multi(ncol,t_lags,order)
 #    print(np.shape(_X))
 #    print(np.shape(_Y))
     
@@ -157,7 +169,39 @@ def swap3(_X,_Y,t_steps,t_lags,ncol,order):
 #        print(_Y.T)
     return _X[:,c[-1]]
 
-
+def swap5(_X,_Y,t_steps,t_lags,ncol,order):
+    print(np.shape(_X))
+    _X = np.copy(_X)
+    c=grouped_col_multi(ncol,t_lags,order)
+#    print(np.shape(_X))
+#    print(np.shape(_Y))
+    
+#    print(c)
+    #print(_X)
+    
+    for i in range(1,t_steps+1):
+        #Xnew=np.array([_Y,_Y,_Y])
+        for k in range(t_lags+1):
+            #print(k)
+            
+            if ((k+1)<=t_lags):
+                
+                _X.T[:,[c[:,k]]] = _X.T[:,[c[:,k+1]]]
+                #print(np.shape(_X[:,k]))
+            #_X[:,-(k+1)] = Xnew[k]
+            else:
+                xx=Ideal_poly3(_Y[c[:,0]],order,t_steps)
+#                print(np.shape(_X[c[:,-1]] ))
+#                print(np.shape(xx))
+                _X[c[:,-1]] = xx
+                
+            print(_X)
+            print(">>>",k)
+            print(_X[c[:,-1]])
+        #print(_X[:,c[-1]])
+#        print(_X)
+#        print(_Y.T)
+    return _X[:,c[-1]]
 # STEP 1: CREATING X 
 
 N=60
@@ -171,8 +215,8 @@ ncol=3
 f = np.arange(1,N+1,1)
 X=np.repeat(f,P).reshape(N,P)
 cc=np.arange(1,order+1,1)
-cp=grouped_col(ncol,t_lags,order)
-
+cp=grouped_col_uni(ncol,t_lags,order)
+print(cp)
 """
 Xt2,Yt2=Ideal_lags2(X,t_steps,t_lags)
 Xt,Yt=Ideal_lags(X,t_steps,t_lags)
@@ -184,10 +228,14 @@ Xp2,Yp2=Ideal_poly(X,5,t_steps)
 Yp=swap(Xs,Ys,t_steps,t_lags,ncol,order)
 
 """
-Xp3,Yp3=Ideal_poly(X,order,t_steps)
-Xt3,Yt3=Ideal_lags(Xp3,t_steps,t_lags)
-Yp33=swap3(Xt3,Yt3,t_steps,t_lags,ncol,order)   
 
+#Xp3,Yp3=Ideal_poly(X,order,t_steps)
+#Xt3,Yt3=Ideal_lags(Xp3,t_steps,t_lags)
+#Yp33=swap3(Xt3,Yt3,t_steps,t_lags,ncol,order)   
+
+Xp4=Ideal_poly3(X,order,t_steps)
+Xp5,Yp5=Ideal_poly2(X,order,t_steps)
+Xp6,Yp6=Ideal_poly(X,order,t_steps)
 #cxv=Ideal_poly3(X,order,t_steps)
 
 #c=grouped_col(3,3,1)
