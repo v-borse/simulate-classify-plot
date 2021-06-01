@@ -43,7 +43,7 @@ from module import lorenz
 from module import single_traj
 
 from toy_model import Ideal_poly
-from toy_model import grouped_col_multi,swap, swap3,grouped_col_uni,Ideal_poly3
+from toy_model import grouped_col_multi,swap, swap3,grouped_col_uni,Ideal_poly3,Ideal_poly4
 
 def plot_predicted_ts(X,Y, Yp, Yrp,index):
     fig, axs = plt.subplots(3, 2, sharex=False, sharey=False, figsize=(15, 15))
@@ -234,6 +234,8 @@ def swap4(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
         print(np.shape(Ynrx))
         Xnew=np.array([Ynrx,Ynry,Ynrz])
         print(np.shape(Xnew))
+        
+       
         for k in range(t_lags+1):
             #print(k)
             
@@ -245,7 +247,7 @@ def swap4(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
             else:
                 
                 xx=Ideal_poly3(Xnew.T,order,t_steps)
-                print (xx)
+                #print (xx)
                 #xx=Ideal_poly3(_Y[:,c[0]],order,t_steps)
                 print(np.shape(_Y[:,c[0]] ))
                 print(np.shape(_X[:,c[-1]] ))
@@ -253,7 +255,8 @@ def swap4(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
                 #_X[c[:,-1]] = xx
                 #_X[:,c[-1]] = xx[:,c[-1]]
                 _X[:,c[-1]] = xx
-                
+        #plt.plot(_X[:,-6])   
+        plt.plot(Ynrx)
             #print(Xt4)
             #print(">>>",k)
             #print(Xt4[c[:,-1]])
@@ -304,16 +307,23 @@ def swap6(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
             #_X[:,-(k+1)] = Xnew[k]
             else:
                 
-                xx=Ideal_poly3(Xnew.T,order,t_steps)
+                A=Xnew.T
+                print(np.shape(A))                
+                B=np.transpose(A,(1,0,2)).reshape(3,-1)
+                print(np.shape(B))
+                xx=Ideal_poly3(B.T,order,t_steps)
+                #xx=Ideal_poly3(Xnew.T,order,t_steps)
                 print (xx)
                 #xx=Ideal_poly3(_Y[:,c[0]],order,t_steps)
-                print(np.shape(_Y[:,cu[0]] ))
-                print(np.shape(_X[:,cu[-1]] ))
-                print(np.shape(xx))
+        
+#                print(np.shape(_Y[:,cu[0]] ))
+#                print(np.shape(_X[:,cu[-1]] ))
+#                print(np.shape(xx))
+                
                 #_X[c[:,-1]] = xx
                 #_X[:,c[-1]] = xx[:,c[-1]]
                 _X[:,cu[-1]] = xx
-                
+        plt.plot(YNrx)   
             #print(Xt4)
             #print(">>>",k)
             #print(Xt4[c[:,-1]])
@@ -381,7 +391,7 @@ Xtest, Ytest = Ideal_poly(Xr_test,order,t_steps)
 #Xp_train, Yp_train = Ideal_poly(pts,order,t_steps)
 #Xp_test, Yp_test = Ideal_poly(pts2,order,t_steps)
 
-"""
+
 #-----UNIVARIATE-----------------------
 #-------Non-recursive------------------
 cu = grouped_col_uni(3,t_lags,order)
@@ -459,7 +469,7 @@ Rz.fit(Xr_train, Yr_train[:,2])
 #Xt2,Yt2=Ideal_lags(Xp2,t_steps,t_lags)
 #Yp=swap3(Xp2,Yp2,t_steps,t_lags,ncol,order)
 Yp=swap4(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
-
+"""
 
 #plot_predicted_ts(Xtest, Ytest[:,0],YNRx,YR,0)
 #plot_predicted_ts(Xtest, Ytest[:,1],YNRy,YR,1)
