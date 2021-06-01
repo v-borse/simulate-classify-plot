@@ -55,13 +55,23 @@ def Ideal_poly2(_x,_order,t_steps):
     XX=[]
     for i in range(1,_order+1):
         
-        XX=np.concatenate((_X, np.power(_X,i)), axis=1)
+        XX=np.concatenate((np.power(_X,i),_X), axis=1)
         #print(np.shape(XX))
     
     
     return XX,Y
 
-
+def Ideal_poly4(_x,_order,t_steps):
+    _X=_x[:-t_steps]
+    Y =_x[t_steps:]
+    XX=_x[:-t_steps]
+    for i in range(2,_order+1):
+        
+        XX=np.concatenate((XX,np.power(_X,i)),axis=1)
+        #print(np.shape(XX))
+    
+    
+    return XX,Y
 
 def Ideal_lags(_X,tsteps,tlags):
     Xti=[]
@@ -236,6 +246,7 @@ Yp=swap(Xs,Ys,t_steps,t_lags,ncol,order)
 Xp4=Ideal_poly3(X,order,t_steps)
 Xp5,Yp5=Ideal_poly2(X,order,t_steps)
 Xp6,Yp6=Ideal_poly(X,order,t_steps)
+Xp7,Yp7=Ideal_poly4(X,order,t_steps)
 #cxv=Ideal_poly3(X,order,t_steps)
 
 #c=grouped_col(3,3,1)
