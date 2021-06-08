@@ -29,46 +29,120 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
+from module2 import grouped_col_multi,grouped_col_uni2
+#from module import lorenz
+#from module import single_traj
+#
+#from toy_model import Ideal_poly
+#from toy_model import grouped_col_multi,swap, swap3,grouped_col_uni2,Ideal_poly3,Ideal_poly4
 
-from module import lorenz
-from module import single_traj
 
-from toy_model import Ideal_poly
-from toy_model import grouped_col_multi,swap, swap3,grouped_col_uni,Ideal_poly3,Ideal_poly4
-
-
+def plot_ts(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR):
+    
+    fig, axs = plt.subplots(6, 2, sharex=False, sharey=False, figsize=(15, 15))
+    fig.suptitle(' Linear Regression; dt=0.01')
+    
+    axs[0,0].plot(Ytrue[:,0],'b')
+    axs[0,0].plot(ynrx,'r')
+    #axs[0,0].plot(Ytrue[:,0]-ynrx,'g')
+    axs[0,0].set_xlabel("timesteps")
+    axs[0,0].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[0,0].set_title("X component NR /Univariate")
+    
+    axs[1,0].plot(Ytrue[:,1],'b')
+    axs[1,0].plot(ynry,'r')
+    axs[1,0].set_xlabel("timesteps")
+    axs[1,0].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[1,0].set_title("Y component NR /Univariate")
+    
+    axs[2,0].plot(Ytrue[:,2],'b')
+    axs[2,0].plot(ynrz,'r')
+    axs[2,0].set_xlabel("timesteps")
+    axs[2,0].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[2,0].set_title("Z component NR /Univariate")
+    
+    axs[0,1].plot(Ytrue[:,0],'b')
+    axs[0,1].plot(YNRX,'r')
+    axs[0,1].set_xlabel("timesteps")
+    axs[0,1].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[0,1].set_title("X component NR /Multivariate")
+    
+    axs[1,1].plot(Ytrue[:,1],'b')
+    axs[1,1].plot(YNRY,'r')
+    axs[1,1].set_xlabel("timesteps")
+    axs[1,1].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[1,1].set_title("Y component NR /Multivariate")
+    
+    axs[2,1].plot(Ytrue[:,2],'b')
+    axs[2,1].plot(YNRZ,'r')
+    axs[2,1].set_xlabel("timesteps")
+    axs[2,1].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[2,1].set_title("Z component NR /Multivariate")
+    
+    axs[3,0].plot(Ytrue[:,0])
+    axs[3,0].plot(Yp[:,0])
+    axs[3,0].set_xlabel("timesteps")
+    axs[3,0].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[3,0].set_title("X component R /Univariate")
+    
+    axs[4,0].plot(Ytrue[:,1])
+    axs[4,0].plot(Yp[:,1])
+    axs[4,0].set_xlabel("timesteps")
+    axs[4,0].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[4,0].set_title("Y component R /Univariate")
+    
+    axs[5,0].plot(Ytrue[:,2])
+    axs[5,0].plot(Yp[:,2])
+    axs[5,0].set_xlabel("timesteps")
+    axs[5,0].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[5,0].set_title("Z component R /Univariate")
+    
+    axs[3,1].plot(Ytrue[:,0])
+    axs[3,1].plot(YP[:,0])
+    axs[3,1].set_xlabel("timesteps")
+    axs[3,1].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[3,1].set_title("X component R /Multivariate")
+    
+    axs[4,1].plot(Ytrue[:,1])
+    axs[4,1].plot(YP[:,1])
+    axs[4,1].set_xlabel("timesteps")
+    axs[4,1].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[4,1].set_title("Y component R /Multivariate")
+    
+    axs[5,1].plot(Ytrue[:,2])
+    axs[5,1].plot(YP[:,2])
+    axs[5,1].set_xlabel("timesteps")
+    axs[5,1].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[5,1].set_title("Z component R /Multivariate")
+    
+    fig.tight_layout()
+    
+    
 def Ideal_lags(_X,tsteps,tlags):
     Xti=_X[:-(tsteps+tlags)]
     for i in range(1,tlags+1):
         
         Xti=np.concatenate((Xti, _X[i:-(tsteps+tlags-i)]), axis=1)
-        #print(np.shape(Xti))
-    
+            
     Y  =_X[(tsteps+tlags):]
     
     return(Xti,Y)   
     
-def swap4(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
-    print("in swap4")
+def swap_multi(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
+    
       
     _X = np.copy(_X)
     
     c=grouped_col_multi(ncol,t_lags,order)
 
-    
-    #print("after Ynrx")
-    #print(np.shape(_Y))
     for i in range(1,t_steps+1):
                
         Ynrx = modelx.predict(_X)
         Ynry = modely.predict(_X)
         Ynrz = modelz.predict(_X)
         
-        
         Xnew=np.array([Ynrx,Ynry,Ynrz])
-        #print(np.shape(Xnew))
-        
-       
+               
         for k in range(t_lags+1):
           
             
@@ -78,19 +152,17 @@ def swap4(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
                
             else:
                 
-                xx=Ideal_poly3(Xnew.T,order,t_steps)
-                print(np.shape(_X[:,c[-1]]))
-                print(np.shape(xx))
+                xx=Ideal_poly3(Xnew.T,order,t_steps)              
                 _X[:,c[-1]] = xx
        
     return _X[:,c[-1]]
 
-def swap6(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
-    print("in swap6")
+def swap_uni(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
+    
      
     _X = np.copy(_X)
     c=grouped_col_multi(ncol,t_lags,order)   
-    cu=grouped_col_uni(ncol,t_lags,order)
+    cu=grouped_col_uni2(ncol,t_lags,order)
 
     for i in range(1,t_steps+1):
         
@@ -102,7 +174,7 @@ def swap6(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
         
        
         Xnew=np.array([YNrx,YNry,YNrz])
-        print(np.shape(Xnew))
+        
         for k in range(t_lags+1):
             
             
@@ -120,9 +192,9 @@ def swap6(_X,_Y,modelx,modely,modelz,t_steps,t_lags,ncol,order):
                 A=np.squeeze(Xnew, axis=2)
                 xx=Ideal_poly3(A.T,order,t_steps)
                 
-                print(np.shape(A))
+                
                 #print(np.shape(_X[:,c[-1]]))
-                print(np.shape(xx))
+                
                 _X[:,c[-1]] = xx
         
     return _X[:,c[-1]]
@@ -133,12 +205,9 @@ r=28
 R=1
 tlength = 10000
 
-#N=len(pts)
-#P=3
-
-order=2
+order=1
 t_steps=5
-t_lags=2
+t_lags=1
 ncol=3
 
 pts=single_traj(4,-14,21,r,0.01,tlength) 
@@ -150,16 +219,18 @@ N=len(pts)
 Xr_t1,Yr_t1 = Ideal_poly(pts,order,t_steps)
 Xr_train, Yr_train = Ideal_lags(Xr_t1,1,t_lags)
 
-#Xnr_t1,Ynr_t1=Ideal_poly(pts,order,t_steps)
+
 Xnr_t1,Ynr_t1 = Ideal_poly(pts,order,t_steps)
 Xtrain, Ytrain = Ideal_lags(Xnr_t1,t_steps,t_lags)
 
 Xr_test,Yr_test=Ideal_poly(pts2,order,t_steps)
 Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
+Xtest = Xtrain
+Ytest = Ytrain
 
 #-----UNIVARIATE-----------------------
-#-------Non-recursive------------------
-cu = grouped_col_uni(3,t_lags,order)
+
+cu = grouped_col_uni2(3,t_lags,order)
 #---------------Non-Recursive-----------------
 
 regr_x=linear_model.LinearRegression()
@@ -180,21 +251,15 @@ Ynrz=regr_z.predict(Xtest[:,cu[2]])
 #----RECURSIVE-------------------------------------
 
 rx=linear_model.LinearRegression()
-#rx.fit(Xr_t1[:,cu[0]], Yr_t1[:,0])
 rx.fit(Xr_train[:,cu[0]], Yr_train[:,0,None])
 
 ry=linear_model.LinearRegression()
-#ry.fit(Xr_t1[:,cu[1]], Yr_t1[:,1])
 ry.fit(Xr_train[:,cu[1]], Yr_train[:,1,None])
 
 rz=linear_model.LinearRegression()
-#rz.fit(Xr_t1[:,cu[2]], Yr_t1[:,2])
 rz.fit(Xr_train[:,cu[2]], Yr_train[:,2,None])
-#Yr = GEN_R_predict_uni(Xtest,rx,ry,rz,t_steps,t_lags,ncol,1)
 
-#Xp2,Yp2=Ideal_poly(Xtest,order,t_steps)
-#Yp=swap6(Xp2,Yp2,rx,ry,rz,t_steps,t_lags,ncol,order)
-Yp=swap6(Xtest,Ytest,rx,ry,rz,t_steps,t_lags,ncol,order)
+Yp=swap_uni(Xtest,Ytest,rx,ry,rz,t_steps,t_lags,ncol,order)
 
 
 #============MULTIVARIATE======================
@@ -219,20 +284,14 @@ YNRz=model_z.predict(Xtest)
 #----RECURSIVE-------------------------------------
 
 Rx=linear_model.LinearRegression()
-#Rx.fit(Xnr_t1, Ynr_t1[:,0])
 Rx.fit(Xr_train, Yr_train[:,0])
 
 Ry=linear_model.LinearRegression()
-#Ry.fit(Xnr_t1, Ynr_t1[:,1])
 Ry.fit(Xr_train, Yr_train[:,1])
 
 Rz=linear_model.LinearRegression()
-#Rz.fit(Xnr_t1, Ynr_t1[:,2])
 Rz.fit(Xr_train, Yr_train[:,2])
-#YR = GEN_R_predict_multi(Xtest,Rx,Ry,Rz,t_steps,t_lags,ncol,1)
 
-#Xp2,Yp2=Ideal_poly(Xtest,order,t_steps)
-#Xt2,Yt2=Ideal_lags(Xp2,t_steps,t_lags)
-#Yp=swap3(Xp2,Yp2,t_steps,t_lags,ncol,order)
-#YP=swap4(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
+YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
 
+plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
