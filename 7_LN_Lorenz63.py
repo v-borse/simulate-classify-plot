@@ -40,7 +40,6 @@ import module2
 r=28
 R=1
 tlength = 10000
-
 order=1
 t_steps=5
 t_lags=1
@@ -130,4 +129,5 @@ Rz.fit(Xr_train, Yr_train[:,2])
 
 YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
 
-plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
+#plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
+plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)

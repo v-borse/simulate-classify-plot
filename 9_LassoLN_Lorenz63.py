@@ -54,14 +54,14 @@ import module2
 
 r=28
 R=1
-tlength = 10000
+tlength = 9999
 
 order=1
-t_steps=5
+t_steps=25
 t_lags=1
 ncol=3
 
-pts=single_traj(4,-14,21,r,0.01,tlength) 
+pts=single_traj(4,-14,21.07,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 N=len(pts)
 
@@ -109,7 +109,7 @@ rx=linear_model.Lasso(alpha)
 #rx=linear_model.LinearRegression()
 rx.fit(Xr_train[:,cu[0]], Yr_train[:,0])
 
-ry=linear_model.Ridge(alpha)
+ry=linear_model.Lasso(alpha)
 #ry=linear_model.LinearRegression()
 ry.fit(Xr_train[:,cu[1]], Yr_train[:,1])
 
@@ -159,3 +159,4 @@ Rz.fit(Xr_train, Yr_train[:,2])
 YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
 
 plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
+#plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)

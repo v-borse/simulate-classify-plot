@@ -70,7 +70,7 @@ Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
 Xtest = Xtrain
 Ytest = Ytrain
 
-alpha=100
+alpha=1
 
 #-----UNIVARIATE-----------------------
 

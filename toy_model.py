@@ -99,21 +99,7 @@ def Ideal_lags2(_X,tsteps,tlags):
     
     return(Xti,Y)      
     
-def grouped_col_uni(ncol,t_lags,order):
-    
-    ff= np.arange(0,(ncol*(t_lags+1)*order),1)
-    #F=np.reshape(ff,((t_lags+1),ncol*order))
-    F=np.reshape(ff,(ncol*order,(t_lags+1)))
-    
-    return F.T
 
-def grouped_col_multi(ncol,t_lags,order):
-    
-    ff= np.arange(0,(ncol*(t_lags+1)*order),1)
-    F=np.reshape(ff,((t_lags+1),ncol*order))
-    
-    
-    return F
 
 def swap(_X,_Y,t_steps,t_lags,ncol,order):
     
@@ -212,21 +198,50 @@ def swap5(_X,_Y,t_steps,t_lags,ncol,order):
 #        print(_X)
 #        print(_Y.T)
     return _X[:,c[-1]]
+
+def grouped_col_uni(ncol,t_lags,order):
+    
+    ff= np.arange(0,(ncol*(t_lags+1)*order),1)
+    #F=np.reshape(ff,((t_lags+1),ncol*order))
+    F=np.reshape(ff,(ncol*order,(t_lags+1)))
+    
+    return F.T
+
+def grouped_col_uni2(ncol,t_lags,order):
+    
+    ff= np.arange(0,(ncol*(t_lags+1)*order),1)
+    #F=np.reshape(ff,((t_lags+1),ncol*order))
+    F=np.reshape(ff,((t_lags+1)*order,ncol))
+    
+    return F.T
+
+def grouped_col_multi(ncol,t_lags,order):
+    
+    ff= np.arange(0,(ncol*(t_lags+1)*order),1)
+    F=np.reshape(ff,((t_lags+1),ncol*order))
+    
+    
+    return F
 # STEP 1: CREATING X 
 
 N=60
 P=3
 
 order=3
-t_steps=1
-t_lags=2
+t_steps=5
+t_lags=0
+
 ncol=3
 
 f = np.arange(1,N+1,1)
 X=np.repeat(f,P).reshape(N,P)
 cc=np.arange(1,order+1,1)
 cp=grouped_col_uni(ncol,t_lags,order)
-print(cp)
+cu=grouped_col_uni2(ncol,t_lags,order)
+c=grouped_col_multi(ncol,t_lags,order)
+#print(cp)
+print(cu)
+print(np.shape(cu))
 """
 Xt2,Yt2=Ideal_lags2(X,t_steps,t_lags)
 Xt,Yt=Ideal_lags(X,t_steps,t_lags)
@@ -247,6 +262,12 @@ Xp4=Ideal_poly3(X,order,t_steps)
 Xp5,Yp5=Ideal_poly2(X,order,t_steps)
 Xp6,Yp6=Ideal_poly(X,order,t_steps)
 Xp7,Yp7=Ideal_poly4(X,order,t_steps)
+
+Xp8,Yp8=Ideal_lags(X,t_steps,t_lags)
+Xp9,Yp9=Ideal_poly(Xp8,order,t_steps)
+
+Xp10,Yp10=Ideal_lags(Xp6,t_steps,t_lags)
+
 #cxv=Ideal_poly3(X,order,t_steps)
 
 #c=grouped_col(3,3,1)

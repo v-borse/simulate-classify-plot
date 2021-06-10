@@ -242,3 +242,84 @@ def plot_ts(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR):
     axs[5,1].set_title("Z component R /Multivariate")
     
     fig.tight_layout()
+
+
+def plot_error(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR):
+    
+    fig, axs = plt.subplots(6, 2, sharex=False, sharey=False, figsize=(15, 15))
+    fig.suptitle(' Linear Regression; dt=0.01')
+    
+    axs[0,0].plot(Ytrue[:,0]-ynrx,'b')
+    axs[0,0].plot(ynrx,'r')
+    #axs[0,0].plot(Ytrue[:,0]-ynrx,'g')
+    axs[0,0].set_xlabel("timesteps")
+    axs[0,0].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[0,0].set_title("X component NR /Univariate")
+    
+    axs[1,0].plot(Ytrue[:,1]-ynry,'b')
+    #axs[1,0].plot(ynry,'r')
+    axs[1,0].set_xlabel("timesteps")
+    axs[1,0].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[1,0].set_title("Y component NR /Univariate")
+    
+    axs[2,0].plot(Ytrue[:,2]-ynrz,'b')
+    #axs[2,0].plot(ynrz,'r')
+    axs[2,0].set_xlabel("timesteps")
+    axs[2,0].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[2,0].set_title("Z component NR /Univariate")
+    
+    axs[0,1].plot(Ytrue[:,0]-YNRX,'b')
+    #axs[0,1].plot(YNRX,'r')
+    axs[0,1].set_xlabel("timesteps")
+    axs[0,1].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[0,1].set_title("X component NR /Multivariate")
+    
+    axs[1,1].plot(Ytrue[:,1]-YNRY,'b')
+    #axs[1,1].plot(YNRY,'r')
+    axs[1,1].set_xlabel("timesteps")
+    axs[1,1].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[1,1].set_title("Y component NR /Multivariate")
+    
+    axs[2,1].plot(Ytrue[:,2]-YNRZ,'b')
+    #axs[2,1].plot(YNRZ,'r')
+    axs[2,1].set_xlabel("timesteps")
+    axs[2,1].set_ylabel("blue:Ytrue ; red: pred" )
+    axs[2,1].set_title("Z component NR /Multivariate")
+    
+    axs[3,0].plot(Ytrue[:,0]-Yp[:,0])
+    #axs[3,0].plot(Yp[:,0])
+    axs[3,0].set_xlabel("timesteps")
+    axs[3,0].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[3,0].set_title("X component R /Univariate")
+    
+    axs[4,0].plot(Ytrue[:,1]-Yp[:,1])
+    #axs[4,0].plot(Yp[:,1])
+    axs[4,0].set_xlabel("timesteps")
+    axs[4,0].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[4,0].set_title("Y component R /Univariate")
+    
+    axs[5,0].plot(Ytrue[:,2]-Yp[:,2])
+    #axs[5,0].plot(Yp[:,2])
+    axs[5,0].set_xlabel("timesteps")
+    axs[5,0].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[5,0].set_title("Z component R /Univariate")
+    
+    axs[3,1].plot(Ytrue[:,0]-YP[:,0])
+    #axs[3,1].plot(YP[:,0])
+    axs[3,1].set_xlabel("timesteps")
+    axs[3,1].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[3,1].set_title("X component R /Multivariate")
+    
+    axs[4,1].plot(Ytrue[:,1]-YP[:,1])
+    #axs[4,1].plot(YP[:,1])
+    axs[4,1].set_xlabel("timesteps")
+    axs[4,1].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[4,1].set_title("Y component R /Multivariate")
+    
+    axs[5,1].plot(Ytrue[:,2]-YP[:,2])
+    #axs[5,1].plot(YP[:,2])
+    axs[5,1].set_xlabel("timesteps")
+    axs[5,1].set_ylabel("blue:Ytrue ; orange: pred" )
+    axs[5,1].set_title("Z component R /Multivariate")
+    
+    fig.tight_layout()
