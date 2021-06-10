@@ -57,27 +57,27 @@ R=1
 tlength = 9999
 
 order=1
-t_steps=25
-t_lags=1
+t_steps=5
+t_lags=2
 ncol=3
 
 pts=single_traj(4,-14,21.07,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 N=len(pts)
-
+ss=10
 # --------CREATING DATASETS------------------
 
-Xr_t1,Yr_t1 = Ideal_poly(pts,order,t_steps)
+Xr_t1,Yr_t1 = Ideal_poly(pts[::ss],order,t_steps)
 Xr_train, Yr_train = Ideal_lags(Xr_t1,1,t_lags)
 
 
-Xnr_t1,Ynr_t1 = Ideal_poly(pts,order,t_steps)
+Xnr_t1,Ynr_t1 = Ideal_poly(pts[::ss],order,t_steps)
 Xtrain, Ytrain = Ideal_lags(Xnr_t1,t_steps,t_lags)
 
-Xr_test,Yr_test=Ideal_poly(pts2,order,t_steps)
+Xr_test,Yr_test=Ideal_poly(pts2[::ss],order,t_steps)
 Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
-Xtest = Xtrain
-Ytest = Ytrain
+#Xtest = Xtrain
+#Ytest = Ytrain
 
 alpha=1
 
