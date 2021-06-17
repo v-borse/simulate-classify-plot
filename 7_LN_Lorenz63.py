@@ -41,14 +41,15 @@ r=28
 R=1
 tlength = 9999
 order=1
-t_steps=5
+t_steps=1
 t_lags=1
 ncol=3
 
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
+pts3=single_traj(2,-4,6.05,r,0.01,tlength)
 N=len(pts)
-ss=1
+ss=10
 
 # --------CREATING DATASETS------------------
 
@@ -59,10 +60,16 @@ Xr_train, Yr_train = Ideal_lags(Xr_t1,1,t_lags)
 Xnr_t1,Ynr_t1 = Ideal_poly(pts[::ss],order,t_steps)
 Xtrain, Ytrain = Ideal_lags(Xnr_t1,t_steps,t_lags)
 
-Xr_test,Yr_test=Ideal_poly(pts2[::10],order,t_steps)
+Xr_test,Yr_test=Ideal_poly(pts2[::ss],order,t_steps)
 Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
 #Xtest = Xtrain
 #Ytest = Ytrain
+
+X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
+Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
+
+#cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+alphas=np.arange(0, 10, 0.1)
 
 #-----UNIVARIATE-----------------------
 
@@ -130,5 +137,61 @@ Rz.fit(Xr_train, Yr_train[:,2])
 
 YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
 
-#plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
-plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
+plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
+#plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
+
+print("regr_x=",regr_x.score(Xtest[:,cu[0]],Ytest[:,0]))
+print("regr_y=",regr_y.score(Xtest[:,cu[1]],Ytest[:,1]))
+print("regr_z=",regr_z.score(Xtest[:,cu[2]],Ytest[:,2]))
+
+print("rx=",rx.score(Xtest[:,cu[0]],Ytest[:,0]))
+print("ry=",ry.score(Xtest[:,cu[1]],Ytest[:,1]))
+print("rz=",rz.score(Xtest[:,cu[2]],Ytest[:,2]))
+
+print("model_x=",model_x.score(Xtest,Ytest[:,0]))
+print("model_y=",model_y.score(Xtest,Ytest[:,1]))
+print("model_z=",model_z.score(Xtest,Ytest[:,2]))
+
+print("Rx=",Rx.score(Xtest,Ytest[:,0]))
+print("Ry=",Ry.score(Xtest,Ytest[:,1]))
+print("Rz=",Rz.score(Xtest,Ytest[:,2]))
+
+
+cd=[]
+cd.append(regr_x.score(Xtest[:,cu[0]],Ytest[:,0]))
+cd.append(regr_y.score(Xtest[:,cu[1]],Ytest[:,1]))
+cd.append(regr_z.score(Xtest[:,cu[2]],Ytest[:,2]))
+
+cd.append(rx.score(Xtest[:,cu[0]],Ytest[:,0]))
+cd.append(ry.score(Xtest[:,cu[1]],Ytest[:,1]))
+cd.append(rz.score(Xtest[:,cu[2]],Ytest[:,2]))
+
+cd.append(model_x.score(Xtest,Ytest[:,0]))
+cd.append(model_y.score(Xtest,Ytest[:,1]))
+cd.append(model_z.score(Xtest,Ytest[:,2]))
+
+cd.append(Rx.score(Xtest,Ytest[:,0]))
+cd.append(Ry.score(Xtest,Ytest[:,1]))
+cd.append(Rz.score(Xtest,Ytest[:,2]))
+
+plt.plot([cd[0],cd[3],cd[6],cd[9]])
+plt.plot([cd[1],cd[4],cd[7],cd[10]])
+plt.plot([cd[2],cd[5],cd[8],cd[11]])
+
+
+"""
+
+plt.figure(figsize=(5, 3))
+
+for Model in [Lasso,Ridge]:
+    scores = [cross_val_score(Model(alpha), Xcv, Ycv, cv=10).mean()
+            for alpha in alphas]
+    #print(scores)
+    plt.plot(alphas, scores, label=Model.__name__)
+
+plt.legend(loc='lower left')
+plt.xlabel('alpha')
+plt.ylabel('cross validation score')
+plt.tight_layout()
+plt.show()
+"""
