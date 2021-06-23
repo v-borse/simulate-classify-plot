@@ -69,7 +69,7 @@ X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
 Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
 
 #cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
-alphas=np.arange(0, 10, 0.1)
+alphas=np.arange(0, 100, 1)
 
 #-----UNIVARIATE-----------------------
 

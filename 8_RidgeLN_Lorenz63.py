@@ -79,14 +79,16 @@ Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
 
 
 cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
-alphas=np.arange(0, 10, 0.1)
+cv = None
+
+alphas=np.arange(0.1, 10, 0.1)
 alpha=1
 
 #-----UNIVARIATE-----------------------
 
 cu = grouped_col_uni2(3,t_lags,order)
 #---------------Non-Recursive-----------------
-regr_x= RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error')
+regr_x= RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
 #regr_x=linear_model.LinearRegression(alpha)
 regr_x.fit(Xtrain[:,cu[0]], Ytrain[:,0])
 

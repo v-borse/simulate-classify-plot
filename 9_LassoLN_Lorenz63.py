@@ -52,13 +52,19 @@ import module
 import module2
     
 #----FORMING LORENZ TRAJECTORIES-------
-
+dt=0.01
 r=28
 R=1
 tlength = 9999
+t_length2=999
+it=np.arange(0,tlength+1,1)
+it2=np.arange(0,t_length2+1,0.1)
+
+it=np.linspace(0,(tlength+1)*dt,tlength+1)
+it_d=np.linspace(0,(t_length2+1)*dt*ss,tlength+1)
 
 order=1
-t_steps=1
+t_steps=2
 t_lags=1
 ncol=3
 
@@ -67,7 +73,8 @@ pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 pts3=single_traj(2,-4,6.05,r,0.01,tlength)
 N=len(pts)
 ss=10
-
+start=0
+end=len(Ytest[:,0])
 
 # --------CREATING DATASETS------------------
 
@@ -87,7 +94,7 @@ X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
 Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
 
 #cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
-alphas=np.arange(0, 10, 0.1)
+alphas=np.arange(1, 10000, 100)
 alpha=1
 
 #-----UNIVARIATE-----------------------
@@ -181,9 +188,136 @@ Rz.fit(Xr_train, Yr_train[:,2])
 
 YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
 
-plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
-#plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
+#plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+#plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end)
 
+def predict(pts,pts2,ss,tlength,t_length2,dt, t_steps,order,t_lags):
+    
+    # --------CREATING DATASETS------------------
+    it=np.linspace(0,(tlength+1)*dt,tlength+1)
+    it_d=np.linspace(0,(t_length2+1)*dt*ss,tlength+1)
+    
+    Xr_t1,Yr_t1 = Ideal_poly(pts[::ss],order,t_steps)
+    Xr_train, Yr_train = Ideal_lags(Xr_t1,1,t_lags)
+
+
+    Xnr_t1,Ynr_t1 = Ideal_poly(pts[::ss],order,t_steps)
+    Xtrain, Ytrain = Ideal_lags(Xnr_t1,t_steps,t_lags)
+    
+    Xr_test,Yr_test=Ideal_poly(pts2[::ss],order,t_steps)
+    Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
+    #Xtest = Xtrain
+    #Ytest = Ytrain
+
+    X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
+    Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
+    
+    #cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+    alphas=np.arange(1, 10000, 100)
+    alpha=1
+
+    #-----UNIVARIATE-----------------------
+    
+    cu = grouped_col_uni2(3,t_lags,order)
+    #---------------Non-Recursive-----------------
+    
+    
+    regr_x= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #regr_x= LassoCV(alphas=alphas,cv=10, max_iter=100000, normalize=True)
+    #regr_x=linear_model.Lasso(alpha)
+    #regr_x=linear_model.LinearRegression()
+    regr_x.fit(Xtrain[:,cu[0]], Ytrain[:,0])
+    
+    regr_y= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #regr_y=linear_model.Lasso(alpha)
+    #regr_y=linear_model.LinearRegression()
+    regr_y.fit(Xtrain[:,cu[1]], Ytrain[:,1])
+    
+    regr_z= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #regr_z=linear_model.Lasso(alpha)
+    #regr_z=linear_model.LinearRegression()
+    regr_z.fit(Xtrain[:,cu[2]], Ytrain[:,2])
+    
+    #====predict==================================
+    
+    Ynrx=regr_x.predict(Xtest[:,cu[0]])
+    Ynry=regr_y.predict(Xtest[:,cu[1]])
+    Ynrz=regr_z.predict(Xtest[:,cu[2]])
+    
+    #----RECURSIVE-------------------------------------
+    
+    rx= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #rx=linear_model.Lasso(alpha)
+    #rx=linear_model.LinearRegression()
+    rx.fit(Xr_train[:,cu[0]], Yr_train[:,0])
+    
+    ry= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #ry=linear_model.Lasso(alpha)
+    #ry=linear_model.LinearRegression()
+    ry.fit(Xr_train[:,cu[1]], Yr_train[:,1])
+    
+    rz= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #rz=linear_model.Lasso(alpha)
+    #rz=linear_model.LinearRegression()
+    rz.fit(Xr_train[:,cu[2]], Yr_train[:,2])
+    
+    Yp=swap_uni(Xtest,Ytest,rx,ry,rz,t_steps,t_lags,ncol,order)
+    
+    
+    #============MULTIVARIATE======================
+    c = grouped_col_multi(3,t_lags,order)
+    #---------------Non-Recursive-----------------
+    model_x= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #model_x=linear_model.Lasso(alpha)
+    #model_x=linear_model.LinearRegression()
+    model_x.fit(Xtrain, Ytrain[:,0])
+    
+    model_y= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #model_y=linear_model.Lasso(alpha)
+    #model_y=linear_model.LinearRegression()
+    model_y.fit(Xtrain, Ytrain[:,1])
+    
+    model_z= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #model_z=linear_model.Lasso(alpha)
+    #model_z=linear_model.LinearRegression()
+    model_z.fit(Xtrain, Ytrain[:,2])
+    
+    #====predict==================================
+    
+    YNRx=model_x.predict(Xtest)
+    YNRy=model_y.predict(Xtest)
+    YNRz=model_z.predict(Xtest)
+    
+    #----RECURSIVE-------------------------------------
+    
+    Rx= LassoCV(alphas=alphas,cv=10, random_state=0)
+    #Rx=linear_model.Lasso(alpha)
+    #Rx=linear_model.LinearRegression()
+    Rx.fit(Xr_train, Yr_train[:,0])
+    
+    Ry= LassoCV(alphas=alphas,cv=10,random_state=0)
+    #Ry=linear_model.Lasso(alpha)
+    #Ry=linear_model.LinearRegression()
+    Ry.fit(Xr_train, Yr_train[:,1])
+    
+    Rz= LassoCV(alphas=alphas,cv=10,random_state=0)
+    #Rz=linear_model.Lasso(alpha)
+    #Rz=linear_model.LinearRegression()
+    Rz.fit(Xr_train, Yr_train[:,2])
+    
+    YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
+    coef_det(Xtest,Ytest,regr_x,regr_y,regr_z,rx,ry,rz,model_x,model_y,model_z,Rx,Ry,Rz,cu)
+    #plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+    #plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+    #scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end)
+    
+    return Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,it_d
+
+
+
+
+    
 print("regr_x=",regr_x.score(Xtest[:,cu[0]],Ytest[:,0]))
 print("regr_y=",regr_y.score(Xtest[:,cu[1]],Ytest[:,1]))
 print("regr_z=",regr_z.score(Xtest[:,cu[2]],Ytest[:,2]))
@@ -201,26 +335,29 @@ print("Ry=",Ry.score(Xtest,Ytest[:,1]))
 print("Rz=",Rz.score(Xtest,Ytest[:,2]))
 """
 """
-cd=[]
-cd.append(regr_x.score(Xtest[:,cu[0]],Ytest[:,0]))
-cd.append(regr_y.score(Xtest[:,cu[1]],Ytest[:,1]))
-cd.append(regr_z.score(Xtest[:,cu[2]],Ytest[:,2]))
+def coef_det(Xtest,Ytest,regr_x,regr_y,regr_z,rx,ry,rz,model_x,model_y,model_z,Rx,Ry,Rz,cu):
+    cd=[]
+    cd.append(regr_x.score(Xtest[:,cu[0]],Ytest[:,0]))
+    cd.append(regr_y.score(Xtest[:,cu[1]],Ytest[:,1]))
+    cd.append(regr_z.score(Xtest[:,cu[2]],Ytest[:,2]))
 
-cd.append(rx.score(Xtest[:,cu[0]],Ytest[:,0]))
-cd.append(ry.score(Xtest[:,cu[1]],Ytest[:,1]))
-cd.append(rz.score(Xtest[:,cu[2]],Ytest[:,2]))
+    cd.append(rx.score(Xtest[:,cu[0]],Ytest[:,0]))
+    cd.append(ry.score(Xtest[:,cu[1]],Ytest[:,1]))
+    cd.append(rz.score(Xtest[:,cu[2]],Ytest[:,2]))
 
-cd.append(model_x.score(Xtest,Ytest[:,0]))
-cd.append(model_y.score(Xtest,Ytest[:,1]))
-cd.append(model_z.score(Xtest,Ytest[:,2]))
+    cd.append(model_x.score(Xtest,Ytest[:,0]))
+    cd.append(model_y.score(Xtest,Ytest[:,1]))
+    cd.append(model_z.score(Xtest,Ytest[:,2]))
+    
+    cd.append(Rx.score(Xtest,Ytest[:,0]))
+    cd.append(Ry.score(Xtest,Ytest[:,1]))
+    cd.append(Rz.score(Xtest,Ytest[:,2]))
+    
+    return cd
 
-cd.append(Rx.score(Xtest,Ytest[:,0]))
-cd.append(Ry.score(Xtest,Ytest[:,1]))
-cd.append(Rz.score(Xtest,Ytest[:,2]))
-
-plt.plot([cd[0],cd[3],cd[6],cd[9]])
-plt.plot([cd[1],cd[4],cd[7],cd[10]])
-plt.plot([cd[2],cd[5],cd[8],cd[11]])
+#plt.plot([cd[0],cd[3],cd[6],cd[9]])
+#plt.plot([cd[1],cd[4],cd[7],cd[10]])
+#plt.plot([cd[2],cd[5],cd[8],cd[11]])
 
 """
 plt.figure(figsize=(5, 3))
@@ -237,3 +374,18 @@ plt.ylabel('cross validation score')
 plt.tight_layout()
 plt.show()
 """
+#plt.plot(pts[:1000,0])
+#plt.plot(pts[:10000:10,0])
+
+#plt.plot(it*dt,pts[:,0])
+#plt.plot(it2*ss*dt,pts[:,0])
+#-----------------------
+#plt.plot(it3,pts[:,0])
+#plt.plot(it4,pts[:,0])
+#
+#plt.plot(Ytest[:,0],Yp[:,0])
+
+
+    
+    
+    
