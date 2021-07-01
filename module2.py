@@ -28,6 +28,9 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from sklearn.metrics import mean_squared_error
+import math
+from statistics import variance
 
 
 def grouped_col_uni2(ncol,t_lags,order):
@@ -253,27 +256,27 @@ def plot_error(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR,start,end,int_time):
     fig, axs = plt.subplots(3, sharex=False, sharey=False, figsize=(15, 15))
     fig.suptitle('Error plots')
     
-    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-ynrx[start:end],'^')
-    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-Yp[start:end,0],'+')
-    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-YNRX[start:end],'*')
-    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-YP[start:end,0],'.')
+    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-ynrx[start:end],'^',markersize=12)
+    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-Yp[start:end,0],'+',markersize=12)
+    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-YNRX[start:end],'*',markersize=12)
+    axs[0].plot(int_time[start:end],Ytrue[start:end,0]-YP[start:end,0],'.',markersize=15)
     axs[0].set_xlabel("integration time")
     axs[0].set_ylabel("Error" )
     axs[0].set_title("X component")
     
-    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-ynry[start:end],'^')
-    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-Yp[start:end,1],'+')
-    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-YNRY[start:end],'*')
-    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-YP[start:end,1],'.')
+    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-ynry[start:end],'^',markersize=12)
+    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-Yp[start:end,1],'+',markersize=12)
+    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-YNRY[start:end],'*',markersize=12)
+    axs[1].plot(int_time[start:end],Ytrue[start:end,1]-YP[start:end,1],'.',markersize=15)
     axs[1].set_xlabel("integration time")
     axs[1].set_ylabel("Error" )
     axs[1].set_title("Y component")
     
     
-    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-ynrz[start:end],'^')
-    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-Yp[start:end,2],'+')
-    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-YNRZ[start:end],'*')
-    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-YP[start:end,2],'.')
+    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-ynrz[start:end],'^',markersize=12)
+    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-Yp[start:end,2],'+',markersize=12)
+    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-YNRZ[start:end],'*',markersize=12)
+    axs[2].plot(int_time[start:end],Ytrue[start:end,2]-YP[start:end,2],'.',markersize=15)
     axs[2].set_xlabel("integration time")
     axs[2].set_ylabel("Error" )
     axs[2].set_title("Z component")
@@ -382,6 +385,29 @@ def coef_det(Xtest,Ytest,regr_x,regr_y,regr_z,rx,ry,rz,model_x,model_y,model_z,R
     Cd=np.array(cd)
     
     return Cd
+
+def RMSE(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR):
+    
+    rmse=[]
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,0], ynrx)))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,1], ynry)))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,2], ynrz)))
+    
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,0], YNRX)))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,1], YNRY)))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,2], YNRZ)))
+    
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,0], Yr[:,0])))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,1], Yr[:,1])))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,2], Yr[:,2])))
+    
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,0], YR[:,0])))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,1], YR[:,1])))
+    rmse.append(np.sqrt(mean_squared_error(Ytrue[:,2], YR[:,2])))
+    
+    Rmse=np.array(rmse)
+    return Rmse
+
 
 def predict(pts,pts2,ss,tlength,t_length2,dt, t_steps,order,t_lags):
     
@@ -513,32 +539,69 @@ def cd_lt2(CD,lead_time):
     fig, axs = plt.subplots(3, sharex=False, sharey=False, figsize=(15, 15))
     fig.suptitle(' Predited values v/s lead_time; dt=0.01')
     
-    axs[0].plot(lead_time,CD[:,0],'^')
-    axs[0].plot(lead_time,CD[:,3],'*')
-    axs[0].plot(lead_time,CD[:,6],'+')
-    axs[0].plot(lead_time,CD[:,9],'.')
+    axs[0].plot(lead_time,CD[:,0],'^',markersize=12)
+    axs[0].plot(lead_time,CD[:,3],'*',markersize=12)
+    axs[0].plot(lead_time,CD[:,6],'+',markersize=12)
+    axs[0].plot(lead_time,CD[:,9],'.',markersize=15)
     #axs[0,0].plot(ynrx,'r')
     #axs[0,0].plot(Ytrue[:,0]-ynrx,'g')
     axs[0].set_xlabel("lead time")
     axs[0].set_ylabel("coef_of_det")
     axs[0].set_title("X component")
     
-    axs[1].plot(lead_time,CD[:,1],'^')
-    axs[1].plot(lead_time,CD[:,4],'*')
-    axs[1].plot(lead_time,CD[:,7],'+')
-    axs[1].plot(lead_time,CD[:,10],'.')
+    axs[1].plot(lead_time,CD[:,1],'^',markersize=12)
+    axs[1].plot(lead_time,CD[:,4],'*',markersize=12)
+    axs[1].plot(lead_time,CD[:,7],'+',markersize=12)
+    axs[1].plot(lead_time,CD[:,10],'.',markersize=15)
     #axs[1,0].plot(ynry,'r')
     axs[1].set_xlabel("lead time")
     axs[1].set_ylabel("coef_of_det")
     axs[1].set_title("Y component")
     
-    axs[2].plot(lead_time,CD[:,2],'^')
-    axs[2].plot(lead_time,CD[:,5],'*')
-    axs[2].plot(lead_time,CD[:,8],'+')
-    axs[2].plot(lead_time,CD[:,11],'.')
+    axs[2].plot(lead_time,CD[:,2],'^',markersize=12)
+    axs[2].plot(lead_time,CD[:,5],'*',markersize=12)
+    axs[2].plot(lead_time,CD[:,8],'+',markersize=12)
+    axs[2].plot(lead_time,CD[:,11],'.',markersize=15)
     #axs[2,0].plot(ynrz,'r')
     axs[2].set_xlabel("lead time")
     axs[2].set_ylabel("coef_of_det")
+    axs[2].set_title("Z component")
+    
+    
+    
+    fig.tight_layout()
+    
+def rmse_lt(Rmse,lead_time):
+    
+    fig, axs = plt.subplots(3, sharex=False, sharey=False, figsize=(15, 15))
+    fig.suptitle(' Predited values v/s lead_time; dt=0.01')
+    
+    axs[0].plot(lead_time,Rmse[:,0],'^',markersize=12)
+    axs[0].plot(lead_time,Rmse[:,3],'*',markersize=12)
+    axs[0].plot(lead_time,Rmse[:,6],'+',markersize=12)
+    axs[0].plot(lead_time,Rmse[:,9],'.',markersize=15)
+    #axs[0,0].plot(ynrx,'r')
+    #axs[0,0].plot(Ytrue[:,0]-ynrx,'g')
+    axs[0].set_xlabel("lead time")
+    axs[0].set_ylabel("RMSE")
+    axs[0].set_title("X component")
+    
+    axs[1].plot(lead_time,Rmse[:,1],'^',markersize=12)
+    axs[1].plot(lead_time,Rmse[:,4],'*',markersize=12)
+    axs[1].plot(lead_time,Rmse[:,7],'+',markersize=12)
+    axs[1].plot(lead_time,Rmse[:,10],'.',markersize=15)
+    #axs[1,0].plot(ynry,'r')
+    axs[1].set_xlabel("lead time")
+    axs[1].set_ylabel("RMSE")
+    axs[1].set_title("Y component")
+    
+    axs[2].plot(lead_time,Rmse[:,2],'^',markersize=12)
+    axs[2].plot(lead_time,Rmse[:,5],'*',markersize=12)
+    axs[2].plot(lead_time,Rmse[:,8],'+',markersize=12)
+    axs[2].plot(lead_time,Rmse[:,11],'.',markersize=15)
+    #axs[2,0].plot(ynrz,'r')
+    axs[2].set_xlabel("lead time")
+    axs[2].set_ylabel("RMSE")
     axs[2].set_title("Z component")
     
     
