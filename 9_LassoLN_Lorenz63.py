@@ -49,18 +49,18 @@ it2=np.arange(0,t_length2+1,0.1)
 
 order=1
 t_steps=2
-t_lags=15
+t_lags=1
 ncol=3
 
 pts=single_traj(4,-14,21,r,0.01,tlength) 
-#pts2=single_traj(1,-1,2.05,r,0.01,tlength)
-pts2=single_traj(14,-12,2.05,r,0.01,tlength)
+pts2=single_traj(1,-1,2.05,r,0.01,tlength)
+#pts2=single_traj(14,-12,2.05,r,0.01,tlength)
 pts3=single_traj(2,-4,6.05,r,0.01,tlength)
 N=len(pts)
-ss=10
-start=20
-end=50
-lead_time=[5]
+ss=1
+start=0
+end=len(Xtest[:200,0])
+lead_time=[10]
 cd_=[]
 rmse_=[]
 
@@ -83,14 +83,15 @@ for i,item  in enumerate(lead_time) :
     
     Xr_test,Yr_test=Ideal_poly(pts2[::ss],order,t_steps)
     Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
-    Xtest = Xtrain
-    Ytest = Ytrain
+#    Xtest = Xtrain
+#    Ytest = Ytrain
 
     X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
     Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
     
     #cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
     #alphas=np.arange(0.00000001, 0.0000001, 10)
+    #alphas=np.arange(0, 1, 10)
     alphas=np.arange(1, 10, 10)
     alpha=1
 
@@ -217,9 +218,9 @@ for i,item  in enumerate(lead_time) :
     #plot_error(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end,it_d[i])
     #scatter_plots(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end)
     
-    #plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
-    #plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
-    #scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end=8000)
+#    plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+    plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+#    scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end=8000)
 
 #plt.scatter(lead_time,CD[:,0])
 #cd_lt2(CD,lead_time)
@@ -268,3 +269,5 @@ def true_bias(actual,predicted):
 #mse, bias, var = bias_variance_decomp(regr_x, Xtrain[:,cu[0]], Ytrain[:,0], Xtrain[:,cu[0]], Ytest[:,0], loss='mse', num_rounds=200, random_seed=1)
 print (np.corrcoef(Ytest[:,0],Ynrx))
 print(np.corrcoef(Ytest.T,YP.T))
+print(cd_)
+print(rmse_)
