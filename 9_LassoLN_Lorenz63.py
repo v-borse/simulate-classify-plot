@@ -57,10 +57,10 @@ pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 #pts2=single_traj(14,-12,2.05,r,0.01,tlength)
 pts3=single_traj(2,-4,6.05,r,0.01,tlength)
 N=len(pts)
-ss=1
+ss=10
 start=0
-end=len(Xtest[:200,0])
-lead_time=[10]
+#end=len(Xtest[:200,0])
+lead_time=[1,5,10,15,20,25,30,35,40,45,50]
 cd_=[]
 rmse_=[]
 
@@ -219,11 +219,11 @@ for i,item  in enumerate(lead_time) :
     #scatter_plots(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end)
     
 #    plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
-    plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+#    plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
 #    scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end=8000)
 
 #plt.scatter(lead_time,CD[:,0])
-#cd_lt2(CD,lead_time)
+cd_lt2(CD,lead_time*dt*ss)
 
 #rmse_lt(Rmse_,lead_time)
 #

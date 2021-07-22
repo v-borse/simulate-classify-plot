@@ -29,6 +29,7 @@ from sklearn import linear_model
 import statsmodels.api as sm
 from matplotlib import cm
 import matplotlib.pyplot as plt
+plt.style.use('bmh')
 import seaborn as sns
 import numpy as np
 from statistics import variance
@@ -56,12 +57,12 @@ ncol=3
 pts=single_traj(4,-14,21,r,0.01,tlength) 
 pts2=single_traj(1,-1,2.05,r,0.01,tlength)
 #pts2=single_traj(14,-12,2.05,r,0.01,tlength)
-pts3=single_traj(2,-4,6.05,r,0.01,tlength)
+#pts3=single_traj(2,-4,6.05,r,0.01,tlength)
 N=len(pts)
-ss=1
+ss=10
 start=0
 end=len(Xtest[:200,0])
-lead_time=[10]
+lead_time=[5]
 cd_=[]
 rmse_=[]
 
@@ -190,7 +191,7 @@ for i,item in enumerate(lead_time):
     rmse_.append(RMSE(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP))
     Rmse_=np.array(rmse_)
     
-#    plt.plot(it_d[start:end],Ynrx[start:end])
+#    plt.semilogy(it_d[start:end],Ynrx[start:end])
 #    plt.plot(it_d[start:end],Ynry[start:end])
 #    plt.plot(it_d[start:end],Ynrz[start:end])
 #    
@@ -216,7 +217,8 @@ for i,item in enumerate(lead_time):
     #scatter_plots(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end)
     
 #    plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
-    plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+#    plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+#    plt.legend()
 #    scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end=8000)
 
 #plt.scatter(lead_time,CD[:,0])
