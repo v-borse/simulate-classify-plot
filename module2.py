@@ -398,6 +398,24 @@ def coef_det(Xtest,Ytest,regr_x,regr_y,regr_z,rx,ry,rz,model_x,model_y,model_z,R
     
     return Cd
 
+def coef_det_avg(Xtest,Ytest,regr_x,regr_y,regr_z,rx,ry,rz,model_x,model_y,model_z,Rx,Ry,Rz,cu):
+    cd=[]
+    #cd.append((regr_x.score(Xtest[:,cu[0]],Ytest[:,0])+regr_y.score(Xtest[:,cu[1]],Ytest[:,1])+regr_z.score(Xtest[:,cu[2]],Ytest[:,2]))/3)
+    cd.append((regr_x.score(Xtest[:,cu[0]],Ytest[:,0])+regr_y.score(Xtest[:,cu[1]],Ytest[:,1])+regr_z.score(Xtest[:,cu[2]],Ytest[:,2]))/3)
+    
+
+    cd.append((rx.score(Xtest[:,cu[0]],Ytest[:,0])+ry.score(Xtest[:,cu[1]],Ytest[:,1])+rz.score(Xtest[:,cu[2]],Ytest[:,2]))/3)
+    
+
+    cd.append((model_x.score(Xtest,Ytest[:,0])+model_y.score(Xtest,Ytest[:,1])+model_z.score(Xtest,Ytest[:,2]))/3)
+    
+    cd.append((Rx.score(Xtest,Ytest[:,0])+Ry.score(Xtest,Ytest[:,1])+Rz.score(Xtest,Ytest[:,2]))/3)
+    
+    Cd=np.array(cd)
+    
+    return Cd
+
+
 def RMSE(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR):
     
     rmse=[]
@@ -416,6 +434,23 @@ def RMSE(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR):
     rmse.append(np.sqrt(mean_squared_error(Ytrue[:,0], YR[:,0])))
     rmse.append(np.sqrt(mean_squared_error(Ytrue[:,1], YR[:,1])))
     rmse.append(np.sqrt(mean_squared_error(Ytrue[:,2], YR[:,2])))
+    
+    Rmse=np.array(rmse)
+    return Rmse
+
+def RMSE_avg(Ytrue,ynrx,ynry,ynrz,Yr,YNRX,YNRY,YNRZ,YR,xxx):
+    rmse=[]
+    
+    rmse.append((np.sqrt(mean_squared_error(Ytrue[:,0], xxx))+np.sqrt(mean_squared_error(Ytrue[:,1], xxx))+np.sqrt(mean_squared_error(Ytrue[:,2], xxx)))/3)
+    
+    rmse.append((np.sqrt(mean_squared_error(Ytrue[:,0], ynrx))+np.sqrt(mean_squared_error(Ytrue[:,1], ynry))+np.sqrt(mean_squared_error(Ytrue[:,2], ynrz)))/3)
+    
+    rmse.append((np.sqrt(mean_squared_error(Ytrue[:,0], YNRX))+np.sqrt(mean_squared_error(Ytrue[:,1], YNRY))+np.sqrt(mean_squared_error(Ytrue[:,2], YNRZ)))/3)
+    
+    rmse.append((np.sqrt(mean_squared_error(Ytrue[:,0], Yr[:,0]))+np.sqrt(mean_squared_error(Ytrue[:,1], Yr[:,1]))+np.sqrt(mean_squared_error(Ytrue[:,2], Yr[:,2])))/3)
+   
+    rmse.append((np.sqrt(mean_squared_error(Ytrue[:,0], YR[:,0]))+np.sqrt(mean_squared_error(Ytrue[:,1], YR[:,1]))+np.sqrt(mean_squared_error(Ytrue[:,2], YR[:,2])))/3)
+    
     
     Rmse=np.array(rmse)
     return Rmse
@@ -583,6 +618,19 @@ def cd_lt2(CD,lead_time):
     
     fig.tight_layout()
     
+def cd_avg_lt(CD,lead_time):
+    
+    
+    
+    plt.plot(lead_time,CD[:,0],'^',markersize=12)
+    plt.plot(lead_time,CD[:,1],'*',markersize=12)
+    plt.plot(lead_time,CD[:,2],'+',markersize=12)
+    plt.plot(lead_time,CD[:,3],'.',markersize=12)
+    plt.xlabel("lead time")
+    plt.ylabel("coef_of_det")
+    plt.title("Averaged R^2 v/s leadtime")
+    
+    
 def rmse_lt(Rmse,lead_time):
     
     fig, axs = plt.subplots(3, sharex=False, sharey=False, figsize=(15, 15))
@@ -619,6 +667,26 @@ def rmse_lt(Rmse,lead_time):
     
     
     fig.tight_layout()
+    
+def rmse_avg_lt(Rmse,lead_time):
+    
+    
+    
+    plt.semilogy(lead_time,Rmse[:,1],'^',markersize=12)
+    plt.semilogy(lead_time,Rmse[:,2],'*',markersize=12)
+    plt.semilogy(lead_time,Rmse[:,3],'+',markersize=12)
+    plt.semilogy(lead_time,Rmse[:,4],'.',markersize=12)
+    plt.semilogy(lead_time,Rmse[:,0],'.',markersize=12)
+    plt.xlabel("lead time")
+    plt.ylabel("RMSE")
+    plt.title("Averaged RMSE v/s lead time")
+    
+    
+    
+    
+    
+    
+    
     
     
 def compare(pts2,it,it_d,ss,start=0,end=100):

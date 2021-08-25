@@ -60,7 +60,7 @@ N=len(pts)
 ss=10
 start=0
 #end=len(Xtest[:200,0])
-lead_time=[1,5,10,15,20,25,30,35,40,45,50]
+lead_time=[5]
 cd_=[]
 rmse_=[]
 
@@ -85,9 +85,9 @@ for i,item  in enumerate(lead_time) :
     Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
 #    Xtest = Xtrain
 #    Ytest = Ytrain
-
-    X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
-    Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
+    end=len(Xtest[:200,0])
+#    X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
+#    Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
     
     #cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
     #alphas=np.arange(0.00000001, 0.0000001, 10)
@@ -218,12 +218,12 @@ for i,item  in enumerate(lead_time) :
     #plot_error(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end,it_d[i])
     #scatter_plots(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end)
     
-#    plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
+    plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d*0.1)
 #    plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
 #    scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end=8000)
 
 #plt.scatter(lead_time,CD[:,0])
-cd_lt2(CD,lead_time*dt*ss)
+#cd_lt2(CD,lead_time*dt*ss)
 
 #rmse_lt(Rmse_,lead_time)
 #

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun 29 09:40:39 2021
+Created on Mon Aug 23 09:28:38 2021
 
 @author: vborse
 """
@@ -39,21 +39,10 @@ from mlxtend.evaluate import bias_variance_decomp
 import module
 import module2
 
+
 dt=0.01
 r=28
 R=1
-tlength = 9999
-t_length2=999
-it=np.arange(0,tlength+1,1)
-it2=np.arange(0,t_length2+1,0.1)
-
-#it=np.linspace(0,(tlength+1)*dt,tlength+1)
-#it_d=np.linspace(0,(t_length2+1)*dt*ss,tlength+1)
-
-order=1
-t_steps=10
-t_lags=1
-ncol=3
 
 xx = [  2,  15, -26,   3, -17,   2,  -9,  27,  22, -14, -24,  12,   1,
          5,  22, -12, -28, -15,   5,  28, -26, -29,  21,  -8,  12, -29,
@@ -78,64 +67,53 @@ zz = [ 7,  7,  9,  6, 13,  4, 27, 19,  1,  6, 17,  7, 25, 22, 26, 14,  4,
         7, 14, 14,  4, 25, 11,  0, 13,  9, 16,  3, 29, 27, 23,  2,  0,  2,
        14,  7, 15, 22,  5, 12, 21, 20, 21,  2, 11, 26,  1,  7, 21]
 
+tlength = 9999
+t_length1=999
+t_length2=199
 
+it=np.arange(0,tlength+1,1)
+it1=np.arange(0,t_length1+1,0.1)  # for ss=10
+it2=np.arange(0,t_length2+1,0.02)  # for ss=50
 
-pts=single_traj(4,-14,21,r,0.01,tlength) 
-#pts2=single_traj(1,-1,2.05,r,0.01,tlength)
-#pts2=single_traj(14,-12,2.05,r,0.01,tlength)
+pts_train=single_traj(4,-14,21,r,0.01,tlength) 
+pts_test=single_traj(1,-1,2.05,r,0.01,tlength)
 
-pts3=single_traj(2,-4,6.05,r,0.01,tlength)
-N=len(pts)
-ss=10
-start=0
-end=200
-#end=len(Xtest[:,0])
-lead_time=[5]
-#lead_time=[2,4,6,8,10]
-#lead_time2=np.array([0.1,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0])
+order=1
+t_steps=20
+t_lags=15
+ncol=3
+
+ss=50
+lt_steps=[1]
 cd_=[]
 rmse_=[]
 Rmse_= np.empty((0, 5), float)
 CD= np.empty((0, 4), float)
-#xxx=np.empty(len(pts[:,0]))
+MEAN_train= (np.mean(pts_train[:,0])+np.mean(pts_train[:,1])+np.mean(pts_train[:,2]))/3
 
-MEAN_train= (np.mean(pts[:,0])+np.mean(pts[:,1])+np.mean(pts[:,2]))/3
-#xxx.fill(MEAN_train)
-#RMSE_train=np.sqrt(mean_squared_error((pts[:,0]+pts[:,1]+pts[:,2])/3,xxx))
-#YTest=np.empty((len(lead_time)+1,1000,3)
-for a in range(len(xx[:1])):
-    pts2=single_traj(xx[a],yy[a],zz[a],r,0.01,tlength)
-    MEAN= (np.mean(xx[a])+np.mean(yy[a])+np.mean(zz[a]))/3
-    
-    for i,item  in enumerate(lead_time) :
+for a in range(len(xx[:])):
+    pts_test=single_traj(xx[a],yy[a],zz[a],r,0.01,tlength)
+    for i,item  in enumerate(lt_steps) :
     
         t_steps=item
         # --------CREATING DATASETS------------------
         it=np.linspace(0,(tlength+1)*dt,tlength+1)
-        it_d=np.linspace(0,(t_length2+1)*dt*ss,tlength+1)
+        it_d=np.linspace(0,(t_length1+1)*dt*ss,tlength+1)
         
-        Xr_t1,Yr_t1 = Ideal_poly(pts[::ss],order,t_steps)
+        Xr_t1,Yr_t1 = Ideal_poly(pts_train[::ss],order,t_steps)
         Xr_train, Yr_train = Ideal_lags(Xr_t1,1,t_lags)
         
 
-        Xnr_t1,Ynr_t1 = Ideal_poly(pts[::ss],order,t_steps)
+        Xnr_t1,Ynr_t1 = Ideal_poly(pts_train[::ss],order,t_steps)
         Xtrain, Ytrain = Ideal_lags(Xnr_t1,t_steps,t_lags)
         
-        Xr_test,Yr_test=Ideal_poly(pts2[::ss],order,t_steps)
+        Xr_test,Yr_test=Ideal_poly(pts_test[::ss],order,t_steps)
         Xtest, Ytest = Ideal_lags(Xr_test,t_steps,t_lags)
         
         xxx=np.empty(len(Ytest[:,0]))
         xxx.fill(MEAN_train)
 #        Xtest = Xtrain
 #        Ytest = Ytrain
-        
-        X_cv,Y_cv=Ideal_poly(pts3[::ss],order,t_steps)
-        Xcv, Ycv = Ideal_lags(X_cv,t_steps,t_lags)
-        
-        #cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
-        #alphas=np.arange(0.00000001, 0.0000001, 10)
-        alphas=np.arange(1, 10, 10)
-        alpha=1
         
         #-----UNIVARIATE-----------------------
         
@@ -172,7 +150,6 @@ for a in range(len(xx[:1])):
         
         Yp=swap_uni(Xtest,Ytest,rx,ry,rz,t_steps,t_lags,ncol,order)
         
-        
         #============MULTIVARIATE======================
         c = grouped_col_multi(3,t_lags,order)
         #---------------Non-Recursive-----------------
@@ -204,123 +181,30 @@ for a in range(len(xx[:1])):
         Rz.fit(Xr_train, Yr_train[:,2])
         
         YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
+ 
+        #-----------------------------------------------------------
         
-#        cd_=coef_det_avg(Xtest,Ytest,regr_x,regr_y,regr_z,rx,ry,rz,model_x,model_y,model_z,Rx,Ry,Rz,cu,xxx)
-#        CD=np.append(CD,np.array([cd_]),axis=0)
-        
-#        rmse_.append(RMSE(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP))
-#        Rmse_=np.array(rmse_)
+        cd_=coef_det_avg(Xtest,Ytest,regr_x,regr_y,regr_z,rx,ry,rz,model_x,model_y,model_z,Rx,Ry,Rz,cu)
+        CD=np.append(CD,np.array([cd_]),axis=0)
         
         rmse_=RMSE_avg(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,xxx)
         Rmse_=np.append(Rmse_, np.array([rmse_]), axis=0)
         #plt.boxplot(Rmse_,positions=[a])
-        
-        
-#        plt.plot(it_d[start:end],Ytest[start:end,0],'k+')
-#        plt.plot(it_d[start:end],Ytest[start:end,1],'k+')
-#        plt.plot(it_d[start:end],Ytest[start:end,2],'k+')
-        
-#        plt.plot(it_d[start:end],Ynrx[start:end])
-#        plt.plot(it_d[start:end],Ynry[start:end])
-#        plt.plot(it_d[start:end],Ynrz[start:end])
-#        
-#        plt.plot(it_d[start:end],YNRx[start:end])
-#        plt.plot(it_d[start:end],YNRy[start:end])
-#        plt.plot(it_d[start:end],YNRz[start:end])
-#        
-#        plt.plot(it_d[start:end],Yp[start:end,0])
-#        plt.plot(it_d[start:end],Yp[start:end,1])
-#        plt.plot(it_d[start:end],Yp[start:end,2])
-#   
-#        plt.plot(it_d[start:end],YP[start:end,0])
-#        plt.plot(it_d[start:end],YP[start:end,1])
-#        plt.plot(it_d[start:end],YP[start:end,2])
-#        
-        
-        #print("lead_time",lead_time[i])
-        #plot_ts_lt(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
-        
-        #YTest[i][:][:],YnrX[i],YnrY[i],YnrZ[i],Yp_[i],YNRX[i],YNRY[i],YNRZ[i],YP_[i],It_d[i],CD[i]=predict(pts,pts2,ss,tlength,t_length2,dt, t_steps,order,t_lags)
-        #plot_ts(YTest[i],YnrX[i],YnrY[i],YnrZ[i],Yp_[i],YNRX[i],YNRY[i],YNRZ[i],YP_[i],start,end,It_d)
-        #plot_error(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end,it_d[i])
-        #scatter_plots(Ytest[i],Ynrx[i],Ynry[i],Ynrz[i],Yp[i],YNRx[i],YNRy[i],YNRz[i],YP[i],start,end)
-        
-        plot_ts(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d*0.1)
-#        plot_error(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end,it_d)
-#        scatter_plots(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP,start,end=8000)
-        
-    
-        
-#plt.scatter(lead_time,CD[:,0])
-#cd_avg_lt(CD,lead_time)
-        
-#rmse_avg_lt(Rmse_,np.array(lead_time)*dt*ss)
-
-#compare(pts2,it,it_d,ss,start=0,end=1000)
-"""
-def variance(data):
-    # Number of observations
-    n = len(data)
-    # Mean of the data
-    mean = sum(data) / n
-     # Square deviations
-    deviations = [(x - mean) ** 2 for x in data]
-    # Variance
-    variance = sum(deviations) / n
-    return variance
- 
-def BIAS(actual,predicted):
-    
-    mse_= mean_squared_error(actual,predicted)
-    mse_ = np.mean((actual - predicted)**2)
-
-    vari= variance(actual-predicted)
-    print (vari)
-    print(mse_)
-    print(mse_-vari)
-    Bias=cmath.sqrt(mse_-vari)
-    
-    return Bias
-
-def true_bias(actual,predicted):
-    
-    data= actual-predicted
-    n = len(data)
-    # Mean of the data
-    mean = sum(data) / n
-    
-    return mean
-    
-#_bias=BIAS(Ytest[:,0],Ynrx)
-#print(_bias)
-#tr_bias=true_bias(Ytest[:,0],Ynrx)
-#print(tr_bias)
+        #plt.boxplot(CD,positions=[a])
 #
-#mse, bias, var = bias_variance_decomp(regr_x, Xtrain[:,cu[0]], Ytrain[:,0], Xtrain[:,cu[0]], Ytest[:,0], loss='mse', num_rounds=200, random_seed=1)
+#plt.boxplot(Rmse_[:,1:])
+#plt.title("RMSE boxplots: lead time=0.5; t_lags=15; ss=50")
+#plt.xticks([1,2,3,4],['NR1c2','NR2c2','R1c2','R2c2'])
+#plt.xlabel("Models")
+#plt.ylabel("RMSE")
+#xxxx=np.empty(len(Rmse_[0]))
+#xxxx.fill(np.mean(Rmse_[:,0]))
+#plt.plot(xxxx,'g')
 
-#print (np.corrcoef(Ytest[:,0],Ynrx))
-#print(np.corrcoef(Ytest.T,YP.T))
-#print(cd_)
-#print(rmse_)
-"""
-    
-#label=['Ynrx','Ynry','Ynrz','YNRx','YNRy','YNRz','Yrx','Yry','Yrz','YRx','YRy','YRz']
-#label=['Ynr','YNR','Yr','YR']
-#for i in range(len(Rmse_[0])):
-#    plt.boxplot(Rmse_.T[i],positions=[i])
-#    plt.yscale('log')
-#    #plt.plot(np.mean(Rmse_.T[i]))
-#    plt.title('RMSE Boxplots for 100 trajectories')
-#    plt.xlabel("Models")
-#    plt.ylabel("RMSE")
-#    #plt.xticks([0,1,2,3,4,5,6,7,8,9,10,11],label)
-#    plt.xticks([0,1,2,3],label)
-
-#    
-
-#for i in range(len(CD[0])):
-#    plt.boxplot(CD.T[i],positions=[i])
-#    plt.title('Coef_of dtrmntn Boxplots for 100 trajectories')
-#    plt.xlabel("Models")
-#    plt.ylabel("R^2")
-#    plt.xticks([0,1,2,3,4,5,6,7,8,9,10,11],label)
+plt.boxplot(CD)
+plt.title("R^2 boxplots: lead time=0.5; t_lags=15; ss=50")
+plt.xticks([1,2,3,4],['NR1c2','NR2c2','R1c2','R2c2'])
+plt.xlabel("Models")
+plt.ylabel("Coef_of _deter")
+xxxxx=np.zeros(len(CD[0])+1)
+plt.plot(xxxxx,'g')
