@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Mon Sep  6 14:47:48 2021
+
+@author: vborse
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Mon Aug 23 09:28:38 2021
 
 @author: vborse
@@ -18,7 +26,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import cnames
 from matplotlib import animation
 from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge,RidgeCV
 from sklearn.linear_model import Lasso,LassoCV
 from sklearn.model_selection import RepeatedKFold
 from sklearn.preprocessing import PolynomialFeatures
@@ -118,22 +126,29 @@ for a in range(len(xx[:])):
 #        Xtest = Xtrain
 #        Ytest = Ytrain
         
+        cv = None
+    
+        alphas=np.arange(0.0000000001, 10, 10)
+        #alphas=np.arange(0.000001, 10, 10)
+        #alphas=np.arange(0, 10, 10)
+        alpha=1
+        
         #-----UNIVARIATE-----------------------
         
         cu = grouped_col_uni2(3,t_lags,order)
         #---------------Non-Recursive-----------------
         
-        regr_x=linear_model.LinearRegression()
+        regr_x=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         regr_x.fit(Xtrain[:,cu[0]], Ytrain[:,0])
         #print(cross_val_score(regr_x, Xtrain[:,cu[0]], Ytrain[:,0],scoring='neg_mean_squared_error', cv=10))
         
-        regr_y=linear_model.LinearRegression()
+        regr_y=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         regr_y.fit(Xtrain[:,cu[1]], Ytrain[:,1])
         #print(cross_val_score(regr_y, Xtrain[:,cu[1]], Ytrain[:,1],scoring='neg_mean_squared_error', cv=10))
         
-        regr_z=linear_model.LinearRegression()
+        regr_z=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         regr_z.fit(Xtrain[:,cu[2]], Ytrain[:,2])
-        #print(cross_val_score(regr_x, Xtrain[:,cu[0]], Ytrain[:,0],scoring='neg_mean_squared_error', cv=10))
+        #print(cross_val_score(regr_x, Xtrain[:,cu[0]], Ytrain[:,2],scoring='neg_mean_squared_error', cv=10))
         #====predict==================================
         
         Ynrx=regr_x.predict(Xtest[:,cu[0]])
@@ -142,13 +157,13 @@ for a in range(len(xx[:])):
         
         #----RECURSIVE-------------------------------------
         
-        rx=linear_model.LinearRegression()
+        rx=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         rx.fit(Xr_train[:,cu[0]], Yr_train[:,0,])
         
-        ry=linear_model.LinearRegression()
+        ry=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         ry.fit(Xr_train[:,cu[1]], Yr_train[:,1])
         
-        rz=linear_model.LinearRegression()
+        rz=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         rz.fit(Xr_train[:,cu[2]], Yr_train[:,2])
         
         Yp=swap_uni(Xtest,Ytest,rx,ry,rz,t_steps,t_lags,ncol,order)
@@ -157,13 +172,13 @@ for a in range(len(xx[:])):
         c = grouped_col_multi(3,t_lags,order)
         #---------------Non-Recursive-----------------
         
-        model_x=linear_model.LinearRegression()
+        model_x=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         model_x.fit(Xtrain, Ytrain[:,0])
         
-        model_y=linear_model.LinearRegression()
+        model_y=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         model_y.fit(Xtrain, Ytrain[:,1])
         
-        model_z=linear_model.LinearRegression()
+        model_z=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         model_z.fit(Xtrain, Ytrain[:,2])
         
         #====predict==================================
@@ -174,19 +189,21 @@ for a in range(len(xx[:])):
         
         #----RECURSIVE-------------------------------------
         
-        Rx=linear_model.LinearRegression()
+        Rx=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         Rx.fit(Xr_train, Yr_train[:,0])
         
-        Ry=linear_model.LinearRegression()
+        Ry=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         Ry.fit(Xr_train, Yr_train[:,1])
         
-        Rz=linear_model.LinearRegression()
+        Rz=RidgeCV(alphas, cv=cv, scoring='neg_mean_absolute_error', store_cv_values=True)
         Rz.fit(Xr_train, Yr_train[:,2])
         
         YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
  
         #-----------------------------------------------------------
-        
+        print("x > ",regr_x.alpha_,model_x.alpha_,rx.alpha_,Rx.alpha_)
+        print("y > ",regr_y.alpha_,model_y.alpha_,ry.alpha_,Ry.alpha_)
+        print("z > ",regr_z.alpha_,model_z.alpha_,rz.alpha_,Rz.alpha_)
         cd_=coef_det_avg2(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
         #CD=np.append(CD,np.array([cd_]),axis=0)
         

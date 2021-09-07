@@ -1,6 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Mon Sep  6 16:26:01 2021
+
+@author: vborse
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Sep  6 14:47:48 2021
+
+@author: vborse
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Mon Aug 23 09:28:38 2021
 
 @author: vborse
@@ -18,7 +34,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import cnames
 from matplotlib import animation
 from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge,RidgeCV
 from sklearn.linear_model import Lasso,LassoCV
 from sklearn.model_selection import RepeatedKFold
 from sklearn.preprocessing import PolynomialFeatures
@@ -81,7 +97,7 @@ pts_test=single_traj(1,-1,2.05,r,0.01,tlength)
 
 order=1
 t_steps=20
-t_lags=15
+t_lags=1
 ncol=3
 
 ss=40
@@ -118,22 +134,29 @@ for a in range(len(xx[:])):
 #        Xtest = Xtrain
 #        Ytest = Ytrain
         
+        cv = None
+    
+        alphas=np.arange(0.0000000001, 10, 10)
+        #alphas=np.arange(0.000001, 10, 10)
+        #alphas=np.arange(0, 10, 10)
+        alpha=1
+        
         #-----UNIVARIATE-----------------------
         
         cu = grouped_col_uni2(3,t_lags,order)
         #---------------Non-Recursive-----------------
         
-        regr_x=linear_model.LinearRegression()
+        regr_x=LassoCV(alphas, cv=10, random_state=0)
         regr_x.fit(Xtrain[:,cu[0]], Ytrain[:,0])
         #print(cross_val_score(regr_x, Xtrain[:,cu[0]], Ytrain[:,0],scoring='neg_mean_squared_error', cv=10))
         
-        regr_y=linear_model.LinearRegression()
+        regr_y=LassoCV(alphas, cv=10, random_state=0)
         regr_y.fit(Xtrain[:,cu[1]], Ytrain[:,1])
         #print(cross_val_score(regr_y, Xtrain[:,cu[1]], Ytrain[:,1],scoring='neg_mean_squared_error', cv=10))
         
-        regr_z=linear_model.LinearRegression()
+        regr_z=LassoCV(alphas, cv=10, random_state=0)
         regr_z.fit(Xtrain[:,cu[2]], Ytrain[:,2])
-        #print(cross_val_score(regr_x, Xtrain[:,cu[0]], Ytrain[:,0],scoring='neg_mean_squared_error', cv=10))
+        #print(cross_val_score(regr_x, Xtrain[:,cu[0]], Ytrain[:,2],scoring='neg_mean_squared_error', cv=10))
         #====predict==================================
         
         Ynrx=regr_x.predict(Xtest[:,cu[0]])
@@ -142,13 +165,13 @@ for a in range(len(xx[:])):
         
         #----RECURSIVE-------------------------------------
         
-        rx=linear_model.LinearRegression()
+        rx=LassoCV(alphas, cv=10, random_state=0)
         rx.fit(Xr_train[:,cu[0]], Yr_train[:,0,])
         
-        ry=linear_model.LinearRegression()
+        ry=LassoCV(alphas, cv=10, random_state=0)
         ry.fit(Xr_train[:,cu[1]], Yr_train[:,1])
         
-        rz=linear_model.LinearRegression()
+        rz=LassoCV(alphas, cv=10, random_state=0)
         rz.fit(Xr_train[:,cu[2]], Yr_train[:,2])
         
         Yp=swap_uni(Xtest,Ytest,rx,ry,rz,t_steps,t_lags,ncol,order)
@@ -157,13 +180,13 @@ for a in range(len(xx[:])):
         c = grouped_col_multi(3,t_lags,order)
         #---------------Non-Recursive-----------------
         
-        model_x=linear_model.LinearRegression()
+        model_x=LassoCV(alphas, cv=10, random_state=0)
         model_x.fit(Xtrain, Ytrain[:,0])
         
-        model_y=linear_model.LinearRegression()
+        model_y=LassoCV(alphas, cv=10, random_state=0)
         model_y.fit(Xtrain, Ytrain[:,1])
         
-        model_z=linear_model.LinearRegression()
+        model_z=LassoCV(alphas, cv=10, random_state=0)
         model_z.fit(Xtrain, Ytrain[:,2])
         
         #====predict==================================
@@ -174,19 +197,21 @@ for a in range(len(xx[:])):
         
         #----RECURSIVE-------------------------------------
         
-        Rx=linear_model.LinearRegression()
+        Rx=LassoCV(alphas, cv=10, random_state=0)
         Rx.fit(Xr_train, Yr_train[:,0])
         
-        Ry=linear_model.LinearRegression()
+        Ry=LassoCV(alphas, cv=10, random_state=0)
         Ry.fit(Xr_train, Yr_train[:,1])
         
-        Rz=linear_model.LinearRegression()
+        Rz=LassoCV(alphas, cv=10, random_state=0)
         Rz.fit(Xr_train, Yr_train[:,2])
         
         YP=swap_multi(Xtest,Ytest,Rx,Ry,Rz,t_steps,t_lags,ncol,order)
  
         #-----------------------------------------------------------
-        
+        print("x > ",regr_x.alpha_,model_x.alpha_,rx.alpha_,Rx.alpha_)
+        print("y > ",regr_y.alpha_,model_y.alpha_,ry.alpha_,Ry.alpha_)
+        print("z > ",regr_z.alpha_,model_z.alpha_,rz.alpha_,Rz.alpha_)
         cd_=coef_det_avg2(Ytest,Ynrx,Ynry,Ynrz,Yp,YNRx,YNRy,YNRz,YP)
         #CD=np.append(CD,np.array([cd_]),axis=0)
         
